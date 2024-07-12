@@ -1,0 +1,21 @@
+<configuration>
+
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%magenta(%d{HH:mm:ss.SSS}) %highlight([%thread]) %-5level [userId: %X{userId}]  %cyan(%logger{36}) - %blue(%msg%n)</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="fout" class="ch.qos.logback.core.FileAppender">
+        <file>jhaapi.log</file>
+        <append>false</append>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="stdout" />
+        <appender-ref ref="fout" />
+    </root>
+</configuration>
