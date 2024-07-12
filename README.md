@@ -21,3 +21,6 @@ Make sure to add the repository to the `repositories` tag.
     <url>https://jitpack.io</url>
 </repository>
 ````
+
+---
+Apache 2.0 License
