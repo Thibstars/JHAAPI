@@ -30,6 +30,7 @@ class StatusServiceImplTest {
                   "message": "API running."
                 }
                 """);
+        Mockito.when(response.isSuccessful()).thenReturn(true);
         Mockito.when(response.body()).thenReturn(responseBody);
         Mockito.when(call.execute()).thenReturn(response);
         Mockito.when(configuration.getOkHttpClient().newCall(ArgumentMatchers.any(Request.class))).thenReturn(call);

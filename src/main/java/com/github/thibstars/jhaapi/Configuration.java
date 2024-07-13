@@ -1,6 +1,7 @@
 package com.github.thibstars.jhaapi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.github.thibstars.jhaapi.client.interceptors.RequestTokenInterceptor;
 import com.github.thibstars.jhaapi.exceptions.ConfigurationException;
 import java.net.MalformedURLException;
@@ -44,7 +45,8 @@ public class Configuration {
         this.okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(new RequestTokenInterceptor(this))
                 .build();
-        this.objectMapper = new ObjectMapper();
+        this.objectMapper = new ObjectMapper()
+                .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
     }
 
     public Configuration(String longLivedAccessToken) {
