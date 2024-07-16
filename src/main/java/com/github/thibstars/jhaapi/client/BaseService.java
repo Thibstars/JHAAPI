@@ -71,8 +71,8 @@ public abstract class BaseService<T> {
         try (Response response = configuration.getOkHttpClient().newCall(request).execute()) {
             if (response.isSuccessful()) {
                 responseBody = Objects.requireNonNull(response.body());
-                ObjectMapper mapper = configuration.getObjectMapper();
-                object = mapper.readValue(responseBody.string(), mapper.getTypeFactory().constructCollectionType(List.class, clazz));
+                ObjectMapper objectMapper = configuration.getObjectMapper();
+                object = objectMapper.readValue(responseBody.string(), objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
             } else {
                 LOGGER.warn("Call failed with status code: {}", response.code());
 

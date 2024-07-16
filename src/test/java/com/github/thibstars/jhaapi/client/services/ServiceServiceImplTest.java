@@ -1,4 +1,4 @@
-package com.github.thibstars.jhaapi.client.events;
+package com.github.thibstars.jhaapi.client.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.thibstars.jhaapi.Configuration;
@@ -17,10 +17,10 @@ import org.mockito.Mockito;
 /**
  * @author Thibault Helsmoortel
  */
-class EventServiceImplTest {
+class ServiceServiceImplTest {
 
     @Test
-    void shouldGetEvents() throws IOException {
+    void shouldGetServices() throws IOException {
         Configuration configuration = Mockito.mock(Configuration.class, Mockito.RETURNS_DEEP_STUBS);
         Mockito.when(configuration.getBaseUrl()).thenReturn(URI.create("http://homeassistant:8123/api/").toURL());
 
@@ -30,12 +30,17 @@ class EventServiceImplTest {
         Mockito.when(responseBody.string()).thenReturn("""
                 [
                     {
-                      "event": "state_changed",
-                      "listener_count": 5
+                      "domain": "browser",
+                      "services": {
+                        "browse_url"
+                      }
                     },
                     {
-                      "event": "time_changed",
-                      "listener_count": 2
+                      "domain": "keyboard",
+                      "services": {
+                        "volume_up",
+                        "volume_down"
+                      }
                     }
                 ]
                 """);
@@ -44,14 +49,15 @@ class EventServiceImplTest {
         Mockito.when(call.execute()).thenReturn(response);
         Mockito.when(configuration.getOkHttpClient().newCall(ArgumentMatchers.any(Request.class))).thenReturn(call);
 
-        List<Event> events = List.of(
-                new Event("state_changed", 5),
-                new Event("time_changed", 2)
+        List<Service> events = List.of(
+                new Service("browser", "{\"browse_url\"}"),
+                new Service("keyboard", "{\"volume_up\",\"volume_down\"}")
         );
         ObjectMapper objectMapper = configuration.getObjectMapper();
-        Mockito.when(objectMapper.readValue(responseBody.string(), objectMapper.getTypeFactory().constructCollectionType(List.class, Event.class))).thenReturn(events);
+        Mockito.when(objectMapper.readValue(responseBody.string(),
+                objectMapper.getTypeFactory().constructCollectionType(List.class, Service.class))).thenReturn(events);
 
-        List<Event> result = new EventServiceImpl(configuration).getEvents();
+        List<Service> result = new ServiceServiceImpl(configuration).getServices();
 
         Assertions.assertNotNull(result, "Result must not be null.");
         Assertions.assertEquals(events, result, "Result must match the expected.");
