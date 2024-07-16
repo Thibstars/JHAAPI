@@ -22,5 +22,22 @@ Make sure to add the repository to the `repositories` tag.
 </repository>
 ````
 
+## Usage
+
+Here's a minimalistic example on how to retrieve your Home Assistant status using JHAAPI:
+````java
+Configuration configuration = new Configuration("myLongLivedAccessToken");
+
+StatusService statusService = new StatusServiceImpl(configuration);
+
+statusService.getStatus()
+        .ifPresentOrElse(
+                status -> System.out.println("Got status: " + status.message()),
+                () -> System.out.println("Did not get a status... :(")
+        );
+````
+
+If your instance is running on a different URL, you could also pass that to you configuration: `new Configuration("http://homeassistant:8123/api/", """myLongLivedAccessToken");`
+
 ---
 Apache 2.0 License
