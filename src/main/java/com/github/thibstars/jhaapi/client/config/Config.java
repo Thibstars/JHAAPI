@@ -10,10 +10,10 @@ import java.util.List;
 public record Config(
         List<String> components,
         String configDir,
-        int elevation,
-        double latitude,
+        Integer elevation,
+        Double latitude,
         String locationName,
-        double longitude,
+        Double longitude,
         String timeZone,
         UnitSystem unitSystem,
         String version,
@@ -21,15 +21,15 @@ public record Config(
         List<String> allowlistExternalDirs,
         List<String> allowlistExternalUrls,
         String configSource,
-        boolean recoveryMode,
+        Boolean recoveryMode,
         String state,
         String externalUrl,
         String internalUrl,
         String currency,
         String country,
         String language,
-        boolean safeMode,
-        boolean debug,
+        Boolean safeMode,
+        Boolean debug,
         String radius
         ) {
 
