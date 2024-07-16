@@ -1,8 +1,11 @@
 package com.github.thibstars.jhaapi.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.thibstars.jhaapi.Configuration;
 import com.github.thibstars.jhaapi.exceptions.ClientException;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import okhttp3.Request;
@@ -53,5 +56,32 @@ public abstract class BaseService<T> {
         }
 
         return Optional.ofNullable(object);
+    }
+
+    @SuppressWarnings("unchecked") // We can actually safely cast to List<T> as we constructed that collection type before
+    public List<T> getObjects() {
+        LOGGER.info("Getting objects from url: {}", url);
+
+        Request request = new Request.Builder()
+                .url(configuration.getBaseUrl() + url)
+                .build();
+
+        ResponseBody responseBody;
+        T object;
+        try (Response response = configuration.getOkHttpClient().newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                responseBody = Objects.requireNonNull(response.body());
+                ObjectMapper mapper = configuration.getObjectMapper();
+                object = mapper.readValue(responseBody.string(), mapper.getTypeFactory().constructCollectionType(List.class, clazz));
+            } else {
+                LOGGER.warn("Call failed with status code: {}", response.code());
+
+                return Collections.emptyList();
+            }
+        } catch (IOException e) {
+            throw new ClientException("Unable to fetch objects.", e);
+        }
+
+        return (List<T>) object;
     }
 }
