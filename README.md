@@ -37,7 +37,7 @@ statusService.getStatus()
         );
 ````
 
-If your instance is running on a different URL, you could also pass that to you configuration: `new Configuration("http://homeassistant:8123/api/", """myLongLivedAccessToken");`
+If your instance is running on a different URL, you could also pass that to you configuration: `new Configuration("http://homeassistant:8123/api/", "myLongLivedAccessToken");`
 
 ---
 Apache 2.0 License
