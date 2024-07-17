@@ -1,6 +1,8 @@
 # JHAAPI [![](https://jitpack.io/v/Thibstars/JHAAPI.svg)](https://jitpack.io/#Thibstars/JHAAPI)
 Java Home Assistant API
 
+Home Assistant exposes a [REST API](https://developers.home-assistant.io/docs/api/rest/), for which JHAAPI serves as a client.
+
 ## Installation
 ### Maven
 
@@ -37,7 +39,8 @@ statusService.getStatus()
         );
 ````
 
-If your instance is running on a different URL, you could also pass that to you configuration: `new Configuration("http://homeassistant:8123/api/", "myLongLivedAccessToken");`
+If your instance is running on a different URL, you could also pass that to you configuration:  
+`new Configuration("http://homeassistant:8123/api/", "myLongLivedAccessToken");`
 
 ---
 Apache 2.0 License
