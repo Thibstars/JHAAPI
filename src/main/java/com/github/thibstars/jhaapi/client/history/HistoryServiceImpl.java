@@ -23,10 +23,19 @@ public class HistoryServiceImpl extends BaseService<StateChange> implements Hist
     public List<List<StateChange>> getHistory(OffsetDateTime timeStamp, Set<String> entityIds) {
         LOGGER.info("Getting history");
 
+        if (entityIds == null || entityIds.isEmpty()) {
+            throw new IllegalArgumentException("At least 1 entity id must be provided.");
+        }
+
         if (timeStamp == null) {
             timeStamp = OffsetDateTime.now().minusDays(1); // Use same default as the actual API
         }
 
         return getObjectsOfObjects(timeStamp + "?filter_entity_id=" + String.join(",", entityIds));
+    }
+
+    @Override
+    public List<List<StateChange>> getHistory(Set<String> entityIds) {
+        return getHistory(null, entityIds);
     }
 }

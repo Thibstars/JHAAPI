@@ -6,6 +6,7 @@ import com.github.thibstars.jhaapi.Configuration;
 import java.io.IOException;
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import okhttp3.Call;
@@ -82,10 +83,20 @@ class HistoryServiceImplTest {
                 objectMapper.getTypeFactory().constructCollectionType(List.class, objectMapper.getTypeFactory().constructCollectionType(List.class, StateChange.class))))
                 .thenReturn(history);
 
-        List<List<StateChange>> result = new HistoryServiceImpl(configuration).getHistory(null, Set.of("sun.sun"));
+        List<List<StateChange>> result = new HistoryServiceImpl(configuration).getHistory(Set.of("sun.sun"));
 
         Assertions.assertNotNull(result, "Result must not be null.");
         Assertions.assertNotNull(result.getFirst(), "Sub list must not be null.");
         Assertions.assertEquals(history, result, "Sub list must match the expected.");
+    }
+
+    @Test
+    void shouldNotGetHistoryWhenNoEntityIdsAreProvided() {
+        Configuration configuration = Mockito.mock(Configuration.class, Mockito.RETURNS_DEEP_STUBS);
+
+        HistoryServiceImpl historyService = new HistoryServiceImpl(configuration);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> historyService.getHistory(null), "At least 1 entity id must be provided.");
+        Set<String> emptySet = new HashSet<>();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> historyService.getHistory(emptySet), "At least 1 entity id must be provided.");
     }
 }
