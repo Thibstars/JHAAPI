@@ -21,6 +21,6 @@ public class EventServiceImpl extends BaseService<Event> implements EventService
     public List<Event> getEvents() {
         LOGGER.info("Getting events");
 
-        return getObjectsNestedInOneTooManyBrackets();
+        return getObjects();
     }
 }

@@ -58,35 +58,12 @@ public abstract class BaseService<T> {
         return Optional.ofNullable(object);
     }
 
-    @SuppressWarnings("unchecked") // We can actually safely cast to List<T> as we constructed that collection type before
-    public List<T> getObjectsNestedInOneTooManyBrackets() {
-        LOGGER.info("Getting objects from url: {}", url);
-
-        Request request = new Request.Builder()
-                .url(configuration.getBaseUrl() + url)
-                .build();
-
-        ResponseBody responseBody;
-        T object;
-        try (Response response = configuration.getOkHttpClient().newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                responseBody = Objects.requireNonNull(response.body());
-                ObjectMapper objectMapper = configuration.getObjectMapper();
-                object = objectMapper.readValue(responseBody.string(), objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
-            } else {
-                LOGGER.warn("Call failed with status code: {}", response.code());
-
-                return Collections.emptyList();
-            }
-        } catch (IOException e) {
-            throw new ClientException("Unable to fetch objects.", e);
-        }
-
-        return (List<T>) object;
+    public List<T> getObjects() {
+        return getObjects(url);
     }
 
     @SuppressWarnings("unchecked") // We can actually safely cast to List<T> as we constructed that collection type before
-    public List<T> getObjectsNestedInOneTooManyBrackets(String url) {
+    public List<T> getObjects(String url) {
         String fullUrl = this.url + url;
 
         LOGGER.info("Getting objects from url: {}", fullUrl);
@@ -102,9 +79,10 @@ public abstract class BaseService<T> {
                 responseBody = Objects.requireNonNull(response.body());
                 ObjectMapper objectMapper = configuration.getObjectMapper();
                 String responseBodyString = responseBody.string();
-                // We have one too many levels of '[]', so removing those
                 object = objectMapper.readValue(
-                        responseBodyString.substring(1, responseBodyString.length() -1), objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
+                        responseBodyString,
+                        objectMapper.getTypeFactory().constructCollectionType(List.class, clazz)
+                );
             } else {
                 LOGGER.warn("Call failed with status code: {}", response.code());
 
@@ -115,5 +93,42 @@ public abstract class BaseService<T> {
         }
 
         return (List<T>) object;
+    }
+
+    public List<List<T>> getObjectsOfObjects() {
+        return getObjectsOfObjects(url);
+    }
+
+    @SuppressWarnings("unchecked") // We can actually safely cast to List<T> as we constructed that collection type before
+    public List<List<T>> getObjectsOfObjects(String url) {
+        String fullUrl = this.url + url;
+
+        LOGGER.info("Getting objects of objects from url: {}", fullUrl);
+
+        Request request = new Request.Builder()
+                .url(configuration.getBaseUrl() + fullUrl)
+                .build();
+
+        ResponseBody responseBody;
+        T object;
+        try (Response response = configuration.getOkHttpClient().newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                responseBody = Objects.requireNonNull(response.body());
+                ObjectMapper objectMapper = configuration.getObjectMapper();
+                String responseBodyString = responseBody.string();
+                object = objectMapper.readValue(
+                        responseBodyString,
+                        objectMapper.getTypeFactory().constructCollectionType(List.class, objectMapper.getTypeFactory().constructCollectionType(List.class, clazz))
+                );
+            } else {
+                LOGGER.warn("Call failed with status code: {}", response.code());
+
+                return Collections.emptyList();
+            }
+        } catch (IOException e) {
+            throw new ClientException("Unable to fetch objects.", e);
+        }
+
+        return (List<List<T>>) object;
     }
 }

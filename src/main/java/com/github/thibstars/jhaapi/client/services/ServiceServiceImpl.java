@@ -21,6 +21,6 @@ public class ServiceServiceImpl extends BaseService<Service> implements ServiceS
     public List<Service> getServices() {
         LOGGER.info("Getting services");
 
-        return getObjectsNestedInOneTooManyBrackets();
+        return getObjects();
     }
 }

@@ -4,6 +4,7 @@ import com.github.thibstars.jhaapi.Configuration;
 import com.github.thibstars.jhaapi.client.BaseService;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,13 +20,13 @@ public class HistoryServiceImpl extends BaseService<StateChange> implements Hist
     }
 
     @Override
-    public List<StateChange> getHistory(OffsetDateTime timeStamp, String entityId) {
+    public List<List<StateChange>> getHistory(OffsetDateTime timeStamp, Set<String> entityIds) {
         LOGGER.info("Getting history");
 
         if (timeStamp == null) {
             timeStamp = OffsetDateTime.now().minusDays(1); // Use same default as the actual API
         }
 
-        return getObjectsNestedInOneTooManyBrackets(timeStamp + "?filter_entity_id=" + entityId);
+        return getObjectsOfObjects(timeStamp + "?filter_entity_id=" + String.join(",", entityIds));
     }
 }

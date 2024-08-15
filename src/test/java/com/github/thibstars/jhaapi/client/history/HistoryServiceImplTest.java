@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Set;
 import okhttp3.Call;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -56,31 +57,35 @@ class HistoryServiceImplTest {
         Mockito.when(call.execute()).thenReturn(response);
         Mockito.when(configuration.getOkHttpClient().newCall(ArgumentMatchers.any(Request.class))).thenReturn(call);
 
-        List<StateChange> stateChanges = List.of(
-                new StateChange(
-                        new Attributes(
-                                "Sun",
-                                null
-                        ),
-                        "sun.sun",
-                        OffsetDateTime.parse("2024-07-17T12:00:00+00:00"),
-                        OffsetDateTime.parse("2024-07-17T12:00:00+00:00"),
-                        OffsetDateTime.parse("2024-07-17T12:00:00+00:00"),
-                        "above_horizon",
-                        new Context(
-                                "01J2EJCPCH01BVZJP660G9JKXA",
-                                null,
-                                null
+        List<List<StateChange>> history = List.of(
+                List.of(
+                        new StateChange(
+                                new Attributes(
+                                        "Sun",
+                                        null
+                                ),
+                                "sun.sun",
+                                OffsetDateTime.parse("2024-07-17T12:00:00+00:00"),
+                                OffsetDateTime.parse("2024-07-17T12:00:00+00:00"),
+                                OffsetDateTime.parse("2024-07-17T12:00:00+00:00"),
+                                "above_horizon",
+                                new Context(
+                                        "01J2EJCPCH01BVZJP660G9JKXA",
+                                        null,
+                                        null
+                                )
                         )
                 )
         );
         ObjectMapper objectMapper = configuration.getObjectMapper();
-        Mockito.when(objectMapper.readValue(responseBodyString.substring(1, responseBodyString.length() -1),
-                objectMapper.getTypeFactory().constructCollectionType(List.class, StateChange.class))).thenReturn(stateChanges);
+        Mockito.when(objectMapper.readValue(responseBodyString,
+                objectMapper.getTypeFactory().constructCollectionType(List.class, objectMapper.getTypeFactory().constructCollectionType(List.class, StateChange.class))))
+                .thenReturn(history);
 
-        List<StateChange> result = new HistoryServiceImpl(configuration).getHistory(null, "sun.sun");
+        List<List<StateChange>> result = new HistoryServiceImpl(configuration).getHistory(null, Set.of("sun.sun"));
 
         Assertions.assertNotNull(result, "Result must not be null.");
-        Assertions.assertEquals(stateChanges, result, "Result must match the expected.");
+        Assertions.assertNotNull(result.getFirst(), "Sub list must not be null.");
+        Assertions.assertEquals(history, result, "Sub list must match the expected.");
     }
 }
