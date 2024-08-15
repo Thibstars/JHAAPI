@@ -10,4 +10,6 @@ import java.util.Set;
 public interface HistoryService {
 
     List<List<StateChange>> getHistory(OffsetDateTime timeStamp, Set<String> entityIds);
+
+    List<List<StateChange>> getHistory(Set<String> entityIds);
 }
