@@ -2,6 +2,7 @@ package com.github.thibstars.jhaapi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.thibstars.jhaapi.client.interceptors.RequestTokenInterceptor;
 import com.github.thibstars.jhaapi.exceptions.ConfigurationException;
 import java.net.MalformedURLException;
@@ -46,6 +47,7 @@ public class Configuration {
                 .addInterceptor(new RequestTokenInterceptor(this))
                 .build();
         this.objectMapper = new ObjectMapper()
+                .registerModule(new JavaTimeModule())
                 .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
     }
 

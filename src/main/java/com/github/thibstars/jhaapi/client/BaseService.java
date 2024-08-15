@@ -59,7 +59,7 @@ public abstract class BaseService<T> {
     }
 
     @SuppressWarnings("unchecked") // We can actually safely cast to List<T> as we constructed that collection type before
-    public List<T> getObjects() {
+    public List<T> getObjectsNestedInOneTooManyBrackets() {
         LOGGER.info("Getting objects from url: {}", url);
 
         Request request = new Request.Builder()
@@ -73,6 +73,38 @@ public abstract class BaseService<T> {
                 responseBody = Objects.requireNonNull(response.body());
                 ObjectMapper objectMapper = configuration.getObjectMapper();
                 object = objectMapper.readValue(responseBody.string(), objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
+            } else {
+                LOGGER.warn("Call failed with status code: {}", response.code());
+
+                return Collections.emptyList();
+            }
+        } catch (IOException e) {
+            throw new ClientException("Unable to fetch objects.", e);
+        }
+
+        return (List<T>) object;
+    }
+
+    @SuppressWarnings("unchecked") // We can actually safely cast to List<T> as we constructed that collection type before
+    public List<T> getObjectsNestedInOneTooManyBrackets(String url) {
+        String fullUrl = this.url + url;
+
+        LOGGER.info("Getting objects from url: {}", fullUrl);
+
+        Request request = new Request.Builder()
+                .url(configuration.getBaseUrl() + fullUrl)
+                .build();
+
+        ResponseBody responseBody;
+        T object;
+        try (Response response = configuration.getOkHttpClient().newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                responseBody = Objects.requireNonNull(response.body());
+                ObjectMapper objectMapper = configuration.getObjectMapper();
+                String responseBodyString = responseBody.string();
+                // We have one too many levels of '[]', so removing those
+                object = objectMapper.readValue(
+                        responseBodyString.substring(1, responseBodyString.length() -1), objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
             } else {
                 LOGGER.warn("Call failed with status code: {}", response.code());
 
