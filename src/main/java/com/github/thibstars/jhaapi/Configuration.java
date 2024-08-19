@@ -27,7 +27,7 @@ public class Configuration {
     public Configuration(URL baseUrl, String longLivedAccessToken) {
         if (baseUrl == null) {
             try {
-                String defaultBaseUrl = "http://homeassistant:8123/api/";
+                String defaultBaseUrl = "http://homeassistant:8123/api";
                 LOGGER.warn("Base URL not provided, will default to '{}'.", defaultBaseUrl);
 
                 this.baseUrl = URI.create(defaultBaseUrl).toURL();
