@@ -8,4 +8,6 @@ import java.util.List;
 public interface StatesService {
 
     List<State> getStates();
+
+    List<State> getStates(String entityId);
 }
