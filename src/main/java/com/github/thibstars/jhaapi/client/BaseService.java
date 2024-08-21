@@ -36,11 +36,12 @@ public abstract class BaseService<T> {
         this.clazz = clazz;
     }
 
+    @SuppressWarnings("unchecked") // We can actually safely cast to T as we know what it is via the clazz field
     protected Optional<T> getObject() {
         LOGGER.info("Getting object from url: {}", url);
 
         Request request = new Request.Builder()
-                .url(configuration.getBaseUrl() + url)
+                .url(configuration.getBaseUrl() + "/" + url)
                 .build();
 
         ResponseBody responseBody;
@@ -48,7 +49,7 @@ public abstract class BaseService<T> {
         try (Response response = configuration.getOkHttpClient().newCall(request).execute()) {
             if (response.isSuccessful()) {
                 responseBody = Objects.requireNonNull(response.body());
-                object = configuration.getObjectMapper().readValue(responseBody.string(), clazz);
+                object = clazz.equals(String.class) ? (T) responseBody.string() : configuration.getObjectMapper().readValue(responseBody.string(), clazz);
             } else {
                 LOGGER.warn("Call failed with status code: {}", response.code());
 
