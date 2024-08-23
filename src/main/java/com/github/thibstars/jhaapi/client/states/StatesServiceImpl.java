@@ -1,7 +1,7 @@
 package com.github.thibstars.jhaapi.client.states;
 
 import com.github.thibstars.jhaapi.Configuration;
-import com.github.thibstars.jhaapi.client.BaseService;
+import com.github.thibstars.jhaapi.internal.BaseService;
 import java.util.List;
 import java.util.Optional;
 import org.apache.hc.core5.net.URIBuilder;

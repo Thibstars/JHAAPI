@@ -1,7 +1,7 @@
 package com.github.thibstars.jhaapi.client.services;
 
 import com.github.thibstars.jhaapi.Configuration;
-import com.github.thibstars.jhaapi.client.BaseService;
+import com.github.thibstars.jhaapi.internal.BaseService;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
