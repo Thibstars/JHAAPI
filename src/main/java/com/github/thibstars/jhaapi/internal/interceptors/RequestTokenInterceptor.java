@@ -1,4 +1,4 @@
-package com.github.thibstars.jhaapi.client.interceptors;
+package com.github.thibstars.jhaapi.internal.interceptors;
 
 import com.github.thibstars.jhaapi.Configuration;
 import java.io.IOException;

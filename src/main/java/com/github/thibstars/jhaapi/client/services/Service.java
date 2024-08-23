@@ -2,7 +2,7 @@ package com.github.thibstars.jhaapi.client.services;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.github.thibstars.jhaapi.client.deserializers.RawJsonDeserializer;
+import com.github.thibstars.jhaapi.internal.deserializers.RawJsonDeserializer;
 
 /**
  * @author Thibault Helsmoortel

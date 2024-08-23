@@ -1,9 +1,10 @@
-package com.github.thibstars.jhaapi.client.deserializers;
+package com.github.thibstars.jhaapi.internal.deserializers;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.thibstars.jhaapi.internal.deserializers.RawJsonDeserializer;
 import java.io.IOException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

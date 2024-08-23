@@ -1,9 +1,9 @@
-package com.github.thibstars.jhaapi.client;
+package com.github.thibstars.jhaapi.internal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.thibstars.jhaapi.Configuration;
-import com.github.thibstars.jhaapi.exceptions.ClientException;
-import com.github.thibstars.jhaapi.exceptions.JHAAPIException;
+import com.github.thibstars.jhaapi.internal.exceptions.ClientException;
+import com.github.thibstars.jhaapi.internal.exceptions.JHAAPIException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collections;

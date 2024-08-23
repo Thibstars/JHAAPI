@@ -1,4 +1,4 @@
-package com.github.thibstars.jhaapi.exceptions;
+package com.github.thibstars.jhaapi.internal.exceptions;
 
 /**
  * @author Thibault Helsmoortel
