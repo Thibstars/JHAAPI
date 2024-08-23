@@ -5,6 +5,8 @@ import java.io.IOException;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpHeaders;
 
 /**
  * @author Thibault Helsmoortel
@@ -23,8 +25,8 @@ public class RequestTokenInterceptor implements Interceptor {
         Request newRequest;
 
         newRequest = request.newBuilder()
-                .addHeader("Authorization", "Bearer " + configuration.getLongLivedAccessToken())
-                .addHeader("Content-Type", "application/json")
+                .addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + configuration.getLongLivedAccessToken())
+                .addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
                 .build();
 
         return chain.proceed(newRequest);
