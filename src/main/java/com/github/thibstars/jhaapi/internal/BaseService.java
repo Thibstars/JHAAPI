@@ -63,7 +63,15 @@ public abstract class BaseService<T> {
     }
 
     protected List<T> getObjects() {
-        return getObjects("");
+        String fullUrl = this.url;
+
+        LOGGER.info("Getting objects from url: {}", fullUrl);
+
+        Request request = new Request.Builder()
+                .url(configuration.getBaseUrl() + "/" + fullUrl)
+                .build();
+
+        return getObjects(request);
     }
 
     protected List<T> getObjects(URIBuilder uriBuilder) {
@@ -76,18 +84,6 @@ public abstract class BaseService<T> {
         } catch (URISyntaxException e) {
             throw new JHAAPIException(e);
         }
-    }
-
-    protected List<T> getObjects(String url) {
-        String fullUrl = this.url + url;
-
-        LOGGER.info("Getting objects from url: {}", fullUrl);
-
-        Request request = new Request.Builder()
-                .url(configuration.getBaseUrl() + "/" + fullUrl)
-                .build();
-
-        return getObjects(request);
     }
 
     @SuppressWarnings("unchecked") // We can actually safely cast to List<T> as we constructed that collection type before
