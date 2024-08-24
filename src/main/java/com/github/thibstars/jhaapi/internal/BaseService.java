@@ -2,17 +2,19 @@ package com.github.thibstars.jhaapi.internal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.thibstars.jhaapi.Configuration;
+import com.github.thibstars.jhaapi.internal.consumers.JsonResponseListConsumer;
+import com.github.thibstars.jhaapi.internal.consumers.JsonResponseListOfListsConsumer;
+import com.github.thibstars.jhaapi.internal.consumers.JsonResponseObjectConsumer;
+import com.github.thibstars.jhaapi.internal.consumers.StringResponseConsumer;
 import com.github.thibstars.jhaapi.internal.exceptions.ClientException;
 import com.github.thibstars.jhaapi.internal.exceptions.JHAAPIException;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 import org.apache.hc.core5.net.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,51 +26,53 @@ public abstract class BaseService<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseService.class);
 
+    private static final StringResponseConsumer STRING_RESPONSE_CONSUMER = new StringResponseConsumer();
+
     private final Configuration configuration;
 
     private final String url;
 
     private final Class<T> clazz;
 
+    private final JsonResponseObjectConsumer<T> jsonResponseObjectConsumer;
+    private final JsonResponseListConsumer<T> jsonResponseListConsumer;
+    private final JsonResponseListOfListsConsumer<T> jsonResponseListOfListsConsumer;
+
     protected BaseService(Configuration configuration, String url, Class<T> clazz) {
         this.configuration = configuration;
         this.url = url;
         this.clazz = clazz;
+
+        ObjectMapper objectMapper = configuration.getObjectMapper();
+        this.jsonResponseObjectConsumer = new JsonResponseObjectConsumer<>(objectMapper);
+        this.jsonResponseListConsumer = new JsonResponseListConsumer<>(objectMapper);
+        this.jsonResponseListOfListsConsumer = new JsonResponseListOfListsConsumer<>(objectMapper);
     }
 
     @SuppressWarnings("unchecked") // We can actually safely cast to T as we know what it is via the clazz field
     protected Optional<T> getObject() {
-        LOGGER.info("Getting object from url: {}", url);
-
         Request request = new Request.Builder()
                 .url(configuration.getBaseUrl() + "/" + url)
                 .build();
 
-        ResponseBody responseBody;
-        T object;
-        try (Response response = configuration.getOkHttpClient().newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                responseBody = Objects.requireNonNull(response.body());
-                object = clazz.equals(String.class) ? (T) responseBody.string() : configuration.getObjectMapper().readValue(responseBody.string(), clazz);
-            } else {
-                LOGGER.warn("Call failed with status code: {}", response.code());
+        LOGGER.info("Getting object from url: {}", request.url());
 
-                return Optional.empty();
+        try (Response response = configuration.getOkHttpClient().newCall(request).execute()) {
+            if (clazz.equals(String.class)) {
+                return (Optional<T>) STRING_RESPONSE_CONSUMER.apply(response);
             }
+
+            return jsonResponseObjectConsumer.apply(response, clazz);
         } catch (IOException e) {
-            throw new ClientException("Unable to fetch object.", e);
+            handleException(e);
         }
 
-        return Optional.ofNullable(object);
+        return Optional.empty();
     }
 
     protected List<T> getObjects() {
-        String fullUrl = this.url;
-
-        LOGGER.info("Getting objects from url: {}", fullUrl);
-
         Request request = new Request.Builder()
-                .url(configuration.getBaseUrl() + "/" + fullUrl)
+                .url(configuration.getBaseUrl() + "/" + this.url)
                 .build();
 
         return getObjects(request);
@@ -86,66 +90,38 @@ public abstract class BaseService<T> {
         }
     }
 
-    @SuppressWarnings("unchecked") // We can actually safely cast to List<T> as we constructed that collection type before
     private List<T> getObjects(Request request) {
-        ResponseBody responseBody;
-        T object;
-        try (Response response = configuration.getOkHttpClient().newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                responseBody = Objects.requireNonNull(response.body());
-                ObjectMapper objectMapper = configuration.getObjectMapper();
-                String responseBodyString = responseBody.string();
-                object = objectMapper.readValue(
-                        responseBodyString,
-                        objectMapper.getTypeFactory().constructCollectionType(List.class, clazz)
-                );
-            } else {
-                LOGGER.warn("Call failed with status code: {}", response.code());
+        LOGGER.info("Getting objects from url: {}", request.url());
 
-                return Collections.emptyList();
-            }
+        try (Response response = configuration.getOkHttpClient().newCall(request).execute()) {
+            return jsonResponseListConsumer.apply(response, clazz);
         } catch (IOException e) {
-            throw new ClientException("Unable to fetch objects.", e);
+            handleException(e);
         }
 
-        return (List<T>) object;
+        return new ArrayList<>();
     }
 
     public List<List<T>> getObjectsOfObjects() {
         return getObjectsOfObjects(url);
     }
 
-    @SuppressWarnings("unchecked") // We can actually safely cast to List<T> as we constructed that collection type before
     protected List<List<T>> getObjectsOfObjects(String url) {
         String fullUrl = this.url + url;
-
-        LOGGER.info("Getting objects of objects from url: {}", fullUrl);
 
         Request request = new Request.Builder()
                 .url(configuration.getBaseUrl() + "/" + fullUrl)
                 .build();
 
-        ResponseBody responseBody;
-        T object;
-        try (Response response = configuration.getOkHttpClient().newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                responseBody = Objects.requireNonNull(response.body());
-                ObjectMapper objectMapper = configuration.getObjectMapper();
-                String responseBodyString = responseBody.string();
-                object = objectMapper.readValue(
-                        responseBodyString,
-                        objectMapper.getTypeFactory().constructCollectionType(List.class, objectMapper.getTypeFactory().constructCollectionType(List.class, clazz))
-                );
-            } else {
-                LOGGER.warn("Call failed with status code: {}", response.code());
+        LOGGER.info("Getting objects of objects from url: {}", request.url());
 
-                return Collections.emptyList();
-            }
+        try (Response response = configuration.getOkHttpClient().newCall(request).execute()) {
+            return jsonResponseListOfListsConsumer.apply(response, clazz);
         } catch (IOException e) {
-            throw new ClientException("Unable to fetch objects.", e);
+            handleException(e);
         }
 
-        return (List<List<T>>) object;
+        return new ArrayList<>();
     }
 
     protected URIBuilder getUriBuilderFromBaseUrl() {
@@ -155,5 +131,9 @@ public abstract class BaseService<T> {
         } catch (URISyntaxException e) {
             throw new JHAAPIException(e);
         }
+    }
+
+    private static void handleException(IOException e) {
+        throw new ClientException("Unable to fetch object.", e);
     }
 }
