@@ -26,7 +26,11 @@ public class StatesServiceImpl extends BaseService<State> implements StatesServi
 
     @Override
     public List<State> getStates(String entityId) {
-        LOGGER.info("Getting states of entity {}", entityId);
+        if (entityId != null) {
+            LOGGER.info("Getting states of entity {}", entityId);
+        } else {
+            LOGGER.info("Getting states");
+        }
 
         URIBuilder uriBuilderFromBaseUrl = getUriBuilderFromBaseUrl();
 
