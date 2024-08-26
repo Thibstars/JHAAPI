@@ -29,10 +29,7 @@ Make sure to add the repository to the `repositories` tag.
 
 Here's a minimalistic example on how to retrieve your Home Assistant status using JHAAPI:
 ````java
-Configuration configuration = new Configuration(
-        URI.create("http://localhost:8123/api").toURL(),
-        "myLongLivedAccessToken"
-);
+Configuration configuration = new Configuration("myLongLivedAccessToken");
 
 StatusService statusService = new StatusServiceImpl(configuration);
 
@@ -43,7 +40,7 @@ statusService.getStatus()
         );
 ````
 
-If your instance is running on a different URL, you could also pass that to you configuration:  
+If your instance is running on a different URL, you could also pass that to your configuration:  
 `new Configuration("http://homeassistant:8123/api", "myLongLivedAccessToken");`
 
 ---
