@@ -1,5 +1,6 @@
 package com.github.thibstars.jhaapi.client.states;
 
+import com.github.thibstars.jhaapi.client.states.response.State;
 import java.util.List;
 
 /**

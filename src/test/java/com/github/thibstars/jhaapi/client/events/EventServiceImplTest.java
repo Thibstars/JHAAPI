@@ -2,6 +2,7 @@ package com.github.thibstars.jhaapi.client.events;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.thibstars.jhaapi.Configuration;
+import com.github.thibstars.jhaapi.client.events.response.Event;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;

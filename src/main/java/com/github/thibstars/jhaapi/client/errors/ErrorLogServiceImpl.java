@@ -1,6 +1,7 @@
 package com.github.thibstars.jhaapi.client.errors;
 
 import com.github.thibstars.jhaapi.Configuration;
+import com.github.thibstars.jhaapi.client.errors.response.ErrorLog;
 import com.github.thibstars.jhaapi.internal.BaseService;
 import java.util.Optional;
 import org.slf4j.Logger;

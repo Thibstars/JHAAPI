@@ -1,6 +1,7 @@
 package com.github.thibstars.jhaapi.client.history;
 
 import com.github.thibstars.jhaapi.Configuration;
+import com.github.thibstars.jhaapi.client.history.response.StateChange;
 import com.github.thibstars.jhaapi.internal.BaseService;
 import java.time.OffsetDateTime;
 import java.util.List;

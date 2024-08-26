@@ -3,6 +3,7 @@ package com.github.thibstars.jhaapi.client.logbook;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.thibstars.jhaapi.Configuration;
+import com.github.thibstars.jhaapi.client.logbook.response.Log;
 import java.io.IOException;
 import java.net.URI;
 import java.time.OffsetDateTime;

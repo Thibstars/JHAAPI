@@ -1,4 +1,4 @@
-package com.github.thibstars.jhaapi.client.errors;
+package com.github.thibstars.jhaapi.client.errors.response;
 
 /**
  * @author Thibault Helsmoortel

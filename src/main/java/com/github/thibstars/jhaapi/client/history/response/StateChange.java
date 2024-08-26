@@ -1,4 +1,4 @@
-package com.github.thibstars.jhaapi.client.history;
+package com.github.thibstars.jhaapi.client.history.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.OffsetDateTime;

@@ -1,7 +1,7 @@
-package com.github.thibstars.jhaapi.client.states;
+package com.github.thibstars.jhaapi.client.states.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.github.thibstars.jhaapi.client.history.Attributes;
+import com.github.thibstars.jhaapi.client.history.response.Attributes;
 import java.time.OffsetDateTime;
 
 /**

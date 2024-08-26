@@ -1,4 +1,4 @@
-package com.github.thibstars.jhaapi.client.services;
+package com.github.thibstars.jhaapi.client.services.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

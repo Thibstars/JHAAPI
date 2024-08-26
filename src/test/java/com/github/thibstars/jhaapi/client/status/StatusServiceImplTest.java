@@ -1,6 +1,7 @@
 package com.github.thibstars.jhaapi.client.status;
 
 import com.github.thibstars.jhaapi.Configuration;
+import com.github.thibstars.jhaapi.client.status.response.Status;
 import java.io.IOException;
 import java.net.URI;
 import okhttp3.Call;

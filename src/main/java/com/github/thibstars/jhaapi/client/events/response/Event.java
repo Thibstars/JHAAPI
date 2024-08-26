@@ -1,4 +1,4 @@
-package com.github.thibstars.jhaapi.client.events;
+package com.github.thibstars.jhaapi.client.events.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

@@ -1,4 +1,4 @@
-package com.github.thibstars.jhaapi.client.config;
+package com.github.thibstars.jhaapi.client.config.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;

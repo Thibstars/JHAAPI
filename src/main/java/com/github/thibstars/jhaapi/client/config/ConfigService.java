@@ -1,5 +1,6 @@
 package com.github.thibstars.jhaapi.client.config;
 
+import com.github.thibstars.jhaapi.client.config.response.Config;
 import java.util.Optional;
 
 /**
