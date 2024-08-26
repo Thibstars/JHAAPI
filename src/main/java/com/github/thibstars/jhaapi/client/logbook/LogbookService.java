@@ -1,5 +1,6 @@
 package com.github.thibstars.jhaapi.client.logbook;
 
+import com.github.thibstars.jhaapi.client.logbook.response.Log;
 import java.time.OffsetDateTime;
 import java.util.List;
 

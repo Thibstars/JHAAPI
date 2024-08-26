@@ -3,6 +3,9 @@ package com.github.thibstars.jhaapi.client.history;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.thibstars.jhaapi.Configuration;
+import com.github.thibstars.jhaapi.client.history.response.Attributes;
+import com.github.thibstars.jhaapi.client.history.response.Context;
+import com.github.thibstars.jhaapi.client.history.response.StateChange;
 import java.io.IOException;
 import java.net.URI;
 import java.time.OffsetDateTime;
