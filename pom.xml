@@ -27,7 +27,7 @@
         <junit-platform-launcher.version>1.11.0</junit-platform-launcher.version>
         <mockito-core.version>5.13.0</mockito-core.version>
 
-        <maven-surefire-plugin.version>3.4.0</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.5.0</maven-surefire-plugin.version>
     </properties>
 
     <dependencies>
