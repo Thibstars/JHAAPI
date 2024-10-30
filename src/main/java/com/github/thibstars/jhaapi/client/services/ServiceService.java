@@ -9,4 +9,8 @@ import java.util.List;
 public interface ServiceService {
 
     List<Service> getServices();
+
+    void callService(String domain, String service, String serviceData);
+
+    void callService(String domain, String service);
 }
