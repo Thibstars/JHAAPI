@@ -1,4 +1,4 @@
-[![Java CI with Maven](https://github.com/Thibstars/JHAAPI/actions/workflows/ci.yml/badge.svg)](https://github.com/Thibstars/JHAAPI/actions/workflows/ci.yml)
+[![Java CI with Maven](https://github.com/Thibstars/JHAAPI/actions/workflows/ci.yml/badge.svg)](https://github.com/Thibstars/JHAAPI/actions/workflows/ci.yml)[![codecov](https://codecov.io/gh/Thibstars/JHAAPI/graph/badge.svg?token=ri2r2Xbq1m)](https://codecov.io/gh/Thibstars/JHAAPI)
 # JHAAPI [![](https://jitpack.io/v/Thibstars/JHAAPI.svg)](https://jitpack.io/#Thibstars/JHAAPI)
 Java Home Assistant API
 
