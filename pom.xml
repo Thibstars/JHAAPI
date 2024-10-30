@@ -21,7 +21,7 @@
         <okhttp.version>4.12.0</okhttp.version>
         <jackson.version>2.18.0</jackson.version>
         <logback.version>1.5.12</logback.version>
-        <httpcore5.version>5.3</httpcore5.version>
+        <httpcore5.version>5.3.1</httpcore5.version>
 
         <junit-jupiter.version>5.11.3</junit-jupiter.version>
         <junit-platform-launcher.version>1.11.3</junit-platform-launcher.version>
