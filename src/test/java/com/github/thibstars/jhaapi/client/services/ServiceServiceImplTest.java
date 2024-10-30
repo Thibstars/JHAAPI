@@ -63,4 +63,23 @@ class ServiceServiceImplTest {
         Assertions.assertNotNull(result, "Result must not be null.");
         Assertions.assertEquals(events, result, "Result must match the expected.");
     }
+
+    @Test
+    void shouldCallServiceWithinDomain() throws IOException {
+        Configuration configuration = Mockito.mock(Configuration.class, Mockito.RETURNS_DEEP_STUBS);
+        Mockito.when(configuration.getBaseUrl()).thenReturn(URI.create("http://homeassistant:8123/api/").toURL());
+
+        Call call = Mockito.mock(Call.class);
+        Response response = Mockito.mock(Response.class);
+
+        Mockito.when(response.isSuccessful()).thenReturn(true);
+        Mockito.when(call.execute()).thenReturn(response);
+        Mockito.when(configuration.getOkHttpClient().newCall(ArgumentMatchers.any(Request.class))).thenReturn(call);
+
+        String serviceData = "{\"entity_id\": \"light.myAwesomeLight\"}";
+        ServiceServiceImpl serviceService = new ServiceServiceImpl(configuration);
+        serviceService.callService("light", "turn_on", serviceData);
+
+        Mockito.verify(call).execute();
+    }
 }
