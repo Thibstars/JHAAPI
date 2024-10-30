@@ -1,5 +1,6 @@
 package com.github.thibstars.jhaapi.internal;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.thibstars.jhaapi.Configuration;
 import com.github.thibstars.jhaapi.internal.consumers.JsonResponseListConsumer;
@@ -13,7 +14,9 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import okhttp3.MediaType;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.apache.hc.core5.net.URIBuilder;
 import org.slf4j.Logger;
@@ -27,6 +30,7 @@ public abstract class BaseService<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseService.class);
 
     private static final StringResponseConsumer STRING_RESPONSE_CONSUMER = new StringResponseConsumer();
+    private static final MediaType JSON_MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8");
 
     private final Configuration configuration;
 
@@ -122,6 +126,46 @@ public abstract class BaseService<T> {
         }
 
         return new ArrayList<>();
+    }
+
+    protected void post(String url, String body) {
+        String fullUrl = this.url + url;
+
+        try {
+            configuration.getObjectMapper().readTree(body);
+        } catch (JsonProcessingException e) {
+            throw new ClientException("Provided body did not appear to be a valid JSON format.", e);
+        }
+
+        Request request = new Request.Builder()
+                .post(RequestBody.create(body, JSON_MEDIA_TYPE))
+                .url(configuration.getBaseUrl() + "/" + fullUrl)
+                .build();
+
+        LOGGER.info("Performing POST on url: {}", request.url());
+
+        try (Response response = configuration.getOkHttpClient().newCall(request).execute()) {
+            LOGGER.info("Got response with code: {}", response.code());
+        } catch (IOException e) {
+            handleException(e);
+        }
+    }
+
+    protected void post(String url) {
+        String fullUrl = this.url + url;
+
+        Request request = new Request.Builder()
+                .post(RequestBody.create("", null))
+                .url(configuration.getBaseUrl() + "/" + fullUrl)
+                .build();
+
+        LOGGER.info("Performing POST on url: {}", request.url());
+
+        try (Response response = configuration.getOkHttpClient().newCall(request).execute()) {
+            LOGGER.info("Got response with code: {}", response.code());
+        } catch (IOException e) {
+            handleException(e);
+        }
     }
 
     protected URIBuilder getUriBuilderFromBaseUrl() {

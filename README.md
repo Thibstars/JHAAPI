@@ -27,6 +27,10 @@ Make sure to add the repository to the `repositories` tag.
 
 ## Usage
 
+**Given**: you have a token that can be used to perform authenticated requests.
+According to Home Assistant's documentation:
+>You obtain a token ("Long-Lived Access Token") by logging into the frontend using a web browser, and going to your profile.
+
 Here's a minimalistic example on how to retrieve your Home Assistant status using JHAAPI:
 ````java
 Configuration configuration = new Configuration("myLongLivedAccessToken");
@@ -42,6 +46,21 @@ statusService.getStatus()
 
 If your instance is running on a different URL, you could also pass that to your configuration:  
 `new Configuration("http://homeassistant:8123/api", "myLongLivedAccessToken");`
+
+### Calling a service within a specific domain
+
+A simple example that turns your light (with entity id `light.myAwesomeLight`) on:
+````java
+public record ServiceData(String entityId) { }
+
+...
+
+private void turnLightOn(ServiceService serviceService) {
+    ServiceData myAwesomeLight = new ServiceData("light.myAwesomeLight");
+    String serviceData = configuration.getObjectMapper().writeValueAsString(myAwesomeLight);
+    serviceService.callService("light", "turn_on", serviceData);
+}
+````
 
 ---
 Apache 2.0 License

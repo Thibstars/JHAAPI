@@ -24,4 +24,18 @@ public class ServiceServiceImpl extends BaseService<Service> implements ServiceS
 
         return getObjects();
     }
+
+    @Override
+    public void callService(String domain, String service, String serviceData) {
+        LOGGER.info("Calling service {} from domain {} with data {}", service, domain, serviceData);
+
+        post("/" + domain + "/" + service, serviceData);
+    }
+
+    @Override
+    public void callService(String domain, String service) {
+        LOGGER.info("Calling service {} from domain {}", service, domain);
+
+        post("/" + domain + "/" + service);
+    }
 }
