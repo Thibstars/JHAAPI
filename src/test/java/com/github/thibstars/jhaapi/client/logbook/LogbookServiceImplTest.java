@@ -77,5 +77,11 @@ class LogbookServiceImplTest {
 
         Assertions.assertNotNull(result, "Result must not be null.");
         Assertions.assertEquals(logbook, result, "Result must match the expected.");
+        // Test overload methods that should result in the same result...
+        Assertions.assertEquals(logbook, logbookService.getLogs((String) null), "Result must match the expected.");
+        Assertions.assertEquals(logbook, logbookService.getLogs((OffsetDateTime) null), "Result must match the expected.");
+        Assertions.assertEquals(logbook, logbookService.getLogs((String) null, null), "Result must match the expected.");
+        Assertions.assertEquals(logbook, logbookService.getLogs(null, (String) null), "Result must match the expected.");
+        Assertions.assertEquals(logbook, logbookService.getLogs((OffsetDateTime) null, (OffsetDateTime) null), "Result must match the expected.");
     }
 }
