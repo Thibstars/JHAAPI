@@ -24,7 +24,7 @@
         <httpcore5.version>5.3.2</httpcore5.version>
 
         <junit-jupiter.version>5.11.4</junit-jupiter.version>
-        <junit-platform-launcher.version>1.11.4</junit-platform-launcher.version>
+        <junit-platform-launcher.version>1.12.1</junit-platform-launcher.version>
         <mockito-core.version>5.15.2</mockito-core.version>
 
         <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
