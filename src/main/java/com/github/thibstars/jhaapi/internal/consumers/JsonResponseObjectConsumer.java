@@ -19,13 +19,14 @@ public class JsonResponseObjectConsumer<T> extends ResponseConsumer implements B
 
     @Override
     public Optional<T> apply(Response response, Class<T> clazz) {
-        return onSucces(response, () -> getResponseBodyString(response)
+        return onSuccess(response, () -> getResponseBodyString(response)
                 .map(responseBodyString -> {
                     try {
                         return objectMapper.readValue(responseBodyString, clazz);
                     } catch (JsonProcessingException e) {
                         handleException(e);
-                        return null;
+                        // This code is unreachable as handleException throws an exception
+                        throw new RuntimeException("Unreachable code");
                     }
                 }));
     }

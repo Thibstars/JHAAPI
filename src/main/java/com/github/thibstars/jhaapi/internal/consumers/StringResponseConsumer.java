@@ -11,6 +11,6 @@ public class StringResponseConsumer extends ResponseConsumer implements Function
 
     @Override
     public Optional<String> apply(Response response) {
-        return onSucces(response, () -> getResponseBodyString(response));
+        return onSuccess(response, () -> getResponseBodyString(response));
     }
 }

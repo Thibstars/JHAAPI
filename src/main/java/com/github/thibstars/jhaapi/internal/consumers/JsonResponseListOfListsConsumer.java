@@ -2,7 +2,7 @@ package com.github.thibstars.jhaapi.internal.consumers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
 import okhttp3.Response;
@@ -21,16 +21,17 @@ public class JsonResponseListOfListsConsumer<T> extends ResponseConsumer impleme
     @SuppressWarnings("unchecked") // We can actually safely cast to List<List<T>>
     @Override
     public List<List<T>> apply(Response response, Class<T> clazz) {
-        return onSucces(response, () -> getResponseBodyString(response)
+        return onSuccess(response, () -> getResponseBodyString(response)
                 .map(responseBodyString -> {
                     try {
                         return ((List<List<T>>) objectMapper.readValue(responseBodyString,
                                 objectMapper.getTypeFactory().constructCollectionType(List.class, objectMapper.getTypeFactory().constructCollectionType(List.class, clazz))));
                     } catch (JsonProcessingException e) {
                         handleException(e);
-                        return null;
+                        // This code is unreachable as handleException throws an exception
+                        throw new RuntimeException("Unreachable code");
                     }
                 }))
-                .orElse(new ArrayList<>());
+                .orElse(Collections.emptyList());
     }
 }

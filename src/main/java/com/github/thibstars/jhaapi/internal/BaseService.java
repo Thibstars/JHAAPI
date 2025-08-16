@@ -69,9 +69,9 @@ public abstract class BaseService<T> {
             return jsonResponseObjectConsumer.apply(response, clazz);
         } catch (IOException e) {
             handleException(e);
+            // This code is unreachable as handleException throws an exception
+            throw new RuntimeException("Unreachable code");
         }
-
-        return Optional.empty();
     }
 
     protected List<T> getObjects() {
@@ -101,9 +101,9 @@ public abstract class BaseService<T> {
             return jsonResponseListConsumer.apply(response, clazz);
         } catch (IOException e) {
             handleException(e);
+            // This code is unreachable as handleException throws an exception
+            throw new RuntimeException("Unreachable code");
         }
-
-        return new ArrayList<>();
     }
 
     public List<List<T>> getObjectsOfObjects() {
@@ -123,9 +123,9 @@ public abstract class BaseService<T> {
             return jsonResponseListOfListsConsumer.apply(response, clazz);
         } catch (IOException e) {
             handleException(e);
+            // This code is unreachable as handleException throws an exception
+            throw new RuntimeException("Unreachable code");
         }
-
-        return new ArrayList<>();
     }
 
     protected void post(String url, String body) {
@@ -148,6 +148,8 @@ public abstract class BaseService<T> {
             LOGGER.info("Got response with code: {}", response.code());
         } catch (IOException e) {
             handleException(e);
+            // This code is unreachable as handleException throws an exception
+            throw new RuntimeException("Unreachable code");
         }
     }
 
@@ -165,6 +167,8 @@ public abstract class BaseService<T> {
             LOGGER.info("Got response with code: {}", response.code());
         } catch (IOException e) {
             handleException(e);
+            // This code is unreachable as handleException throws an exception
+            throw new RuntimeException("Unreachable code");
         }
     }
 
