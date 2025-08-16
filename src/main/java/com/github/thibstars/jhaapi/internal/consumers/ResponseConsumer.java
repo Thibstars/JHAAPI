@@ -20,10 +20,12 @@ public abstract class ResponseConsumer {
                 .map(Response::body)
                 .map(body -> {
                     try {
-                        return body.string();
+                        String result = body.string();
+                        body.close(); // Explicitly close the body to prevent resource leaks
+                        return result;
                     } catch (IOException e) {
                         handleException(e);
-                        return null;
+                        throw new RuntimeException("This code is unreachable as handleException throws an exception");
                     }
                 });
     }
@@ -32,13 +34,14 @@ public abstract class ResponseConsumer {
         throw new ClientException("Unable to fetch object.", exception);
     }
 
-    protected <T> Optional<T> onSucces(Response response, Callable<Optional<T>> callable) {
+    protected <T> Optional<T> onSuccess(Response response, Callable<Optional<T>> callable) {
         if (response.isSuccessful()) {
             try {
                 return callable.call();
             } catch (Exception e) {
                 handleException(e);
-                return Optional.empty();
+                // This code is unreachable as handleException throws an exception
+                throw new RuntimeException("Unreachable code");
             }
         } else {
             LOGGER.warn("Call failed with status code: {}", response.code());
