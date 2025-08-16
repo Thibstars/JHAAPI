@@ -29,7 +29,7 @@ Make sure to add the repository to the `repositories` tag.
 
 **Given**: you have a token that can be used to perform authenticated requests.
 According to Home Assistant's documentation:
->You obtain a token ("Long-Lived Access Token") by logging into the frontend using a web browser, and going to your profile.
+>You obtain a token ("Long-Lived Access Token") by logging into the frontend using a web browser and going to your profile.
 
 Here's a minimalistic example on how to retrieve your Home Assistant status using JHAAPI:
 ````java
