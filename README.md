@@ -49,6 +49,8 @@ If your instance is running on a different URL, you could also pass that to your
 
 ### Calling a service within a specific domain
 
+#### Using ServiceService directly
+
 A simple example that turns your light (with entity id `light.myAwesomeLight`) on:
 ````java
 public record ServiceData(String entityId) { }
@@ -60,6 +62,17 @@ private void turnLightOn(ServiceService serviceService) {
     String serviceData = configuration.getObjectMapper().writeValueAsString(myAwesomeLight);
     serviceService.callService("light", "turn_on", serviceData);
 }
+````
+
+#### Using LightService
+
+A simpler way to toggle lights using the dedicated LightService:
+````java
+// Create the light service
+LightService lightService = new LightServiceImpl(configuration);
+
+// Toggle a light (will turn it on if it's off, or off if it's on)
+lightService.toggle("myAwesomeLight");
 ````
 
 ---
