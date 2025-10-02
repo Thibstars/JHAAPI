@@ -18,13 +18,13 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <okhttp.version>4.12.0</okhttp.version>
+        <okhttp.version>5.1.0</okhttp.version>
         <jackson.version>2.20.0</jackson.version>
         <logback.version>1.5.18</logback.version>
         <httpcore5.version>5.3.4</httpcore5.version>
 
-        <junit-jupiter.version>5.11.4</junit-jupiter.version>
-        <junit-platform-launcher.version>1.11.4</junit-platform-launcher.version>
+        <junit-jupiter.version>6.0.0</junit-jupiter.version>
+        <junit-platform-launcher.version>6.0.0</junit-platform-launcher.version>
         <mockito-core.version>5.20.0</mockito-core.version>
 
         <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
@@ -36,6 +36,11 @@
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
+            <version>${okhttp.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp-jvm</artifactId>
             <version>${okhttp.version}</version>
         </dependency>
         <dependency>
