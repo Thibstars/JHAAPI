@@ -18,7 +18,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <okhttp.version>5.1.0</okhttp.version>
+        <okhttp.version>5.2.1</okhttp.version>
         <jackson.version>2.20.0</jackson.version>
         <logback.version>1.5.20</logback.version>
         <httpcore5.version>5.3.6</httpcore5.version>
