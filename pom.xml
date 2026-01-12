@@ -23,7 +23,7 @@
         <logback.version>1.5.24</logback.version>
         <httpcore5.version>5.4</httpcore5.version>
 
-        <junit-jupiter.version>6.0.1</junit-jupiter.version>
+        <junit-jupiter.version>6.0.2</junit-jupiter.version>
         <junit-platform-launcher.version>6.0.1</junit-platform-launcher.version>
         <mockito-core.version>5.21.0</mockito-core.version>
 
