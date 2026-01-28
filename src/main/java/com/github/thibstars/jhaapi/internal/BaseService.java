@@ -11,7 +11,6 @@ import com.github.thibstars.jhaapi.internal.exceptions.ClientException;
 import com.github.thibstars.jhaapi.internal.exceptions.JHAAPIException;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import okhttp3.MediaType;
@@ -53,10 +52,14 @@ public abstract class BaseService<T> {
         this.jsonResponseListOfListsConsumer = new JsonResponseListOfListsConsumer<>(objectMapper);
     }
 
-    @SuppressWarnings("unchecked") // We can actually safely cast to T as we know what it is via the clazz field
     protected Optional<T> getObject() {
+        return getObject("");
+    }
+
+    @SuppressWarnings("unchecked") // We can actually safely cast to T as we know what it is via the clazz field
+    protected Optional<T> getObject(String path) {
         Request request = new Request.Builder()
-                .url(configuration.getBaseUrl() + "/" + url)
+                .url(configuration.getBaseUrl() + "/" + url + (path.isEmpty() ? "" : "/" + path))
                 .build();
 
         LOGGER.info("Getting object from url: {}", request.url());

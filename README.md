@@ -64,15 +64,28 @@ private void turnLightOn(ServiceService serviceService) {
 }
 ````
 
-#### Using LightService
+#### Using ToggleableService
 
-A simpler way to toggle lights using the dedicated LightService:
+The `ToggleableService` (and its implementations `LightService` and `SwitchService`) provides an easy way to toggle entities:
+
 ````java
 // Create the light service
 LightService lightService = new LightServiceImpl(configuration);
 
 // Toggle a light (will turn it on if it's off, or off if it's on)
 lightService.toggle("myAwesomeLight");
+
+// Create the switch service
+SwitchService switchService = new SwitchServiceImpl(configuration);
+
+// Toggle a switch
+switchService.toggle("myAwesomeSwitch");
+````
+
+You can also use the generic `ToggleableServiceImpl` for other domains that support `turn_on` and `turn_off`:
+````java
+ToggleableService inputBooleanService = new ToggleableServiceImpl("input_boolean", configuration);
+inputBooleanService.toggle("my_boolean");
 ````
 
 ---
