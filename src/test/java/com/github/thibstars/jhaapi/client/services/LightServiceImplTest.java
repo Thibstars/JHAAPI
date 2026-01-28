@@ -5,8 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.thibstars.jhaapi.Configuration;
 import com.github.thibstars.jhaapi.client.states.StatesService;
 import com.github.thibstars.jhaapi.client.states.response.State;
-import java.util.Collections;
-import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -14,7 +13,7 @@ import org.mockito.Mockito;
 /**
  * Test class for {@link LightServiceImpl}.
  * 
- * @author @author Thibault Helsmoortel
+ * @author Thibault Helsmoortel
  */
 class LightServiceImplTest {
 
@@ -31,7 +30,7 @@ class LightServiceImplTest {
         // Mock the state response to indicate the light is ON
         State onState = Mockito.mock(State.class);
         Mockito.when(onState.state()).thenReturn("on");
-        Mockito.when(statesService.getStates(entityId)).thenReturn(List.of(onState));
+        Mockito.when(statesService.getState(entityId)).thenReturn(Optional.of(onState));
         
         // Mock the ObjectMapper to return a valid JSON string
         ObjectMapper objectMapper = Mockito.mock(ObjectMapper.class);
@@ -62,7 +61,7 @@ class LightServiceImplTest {
         // Mock the state response to indicate the light is OFF
         State offState = Mockito.mock(State.class);
         Mockito.when(offState.state()).thenReturn("off");
-        Mockito.when(statesService.getStates(entityId)).thenReturn(List.of(offState));
+        Mockito.when(statesService.getState(entityId)).thenReturn(Optional.of(offState));
         
         // Mock the ObjectMapper to return a valid JSON string
         ObjectMapper objectMapper = Mockito.mock(ObjectMapper.class);
@@ -90,8 +89,8 @@ class LightServiceImplTest {
         String lightName = "myAwesomeLight";
         String entityId = "light.myAwesomeLight";
         
-        // Mock the state response to return an empty list (no state found)
-        Mockito.when(statesService.getStates(entityId)).thenReturn(Collections.emptyList());
+        // Mock the state response to return an empty Optional (no state found)
+        Mockito.when(statesService.getState(entityId)).thenReturn(Optional.empty());
         
         // Mock the ObjectMapper to return a valid JSON string
         ObjectMapper objectMapper = Mockito.mock(ObjectMapper.class);
@@ -124,7 +123,7 @@ class LightServiceImplTest {
             () -> lightService.toggle(null)
         );
         
-        Assertions.assertEquals("Light name must not be blank", exception.getMessage());
+        Assertions.assertEquals("Entity name must not be blank", exception.getMessage());
     }
     
     @Test
@@ -142,7 +141,7 @@ class LightServiceImplTest {
             () -> lightService.toggle("")
         );
         
-        Assertions.assertEquals("Light name must not be blank", exception.getMessage());
+        Assertions.assertEquals("Entity name must not be blank", exception.getMessage());
     }
     
     @Test
@@ -160,7 +159,7 @@ class LightServiceImplTest {
             () -> lightService.toggle("   ")
         );
         
-        Assertions.assertEquals("Light name must not be blank", exception.getMessage());
+        Assertions.assertEquals("Entity name must not be blank", exception.getMessage());
     }
     
     @Test
@@ -176,7 +175,7 @@ class LightServiceImplTest {
         // Mock the state response
         State offState = Mockito.mock(State.class);
         Mockito.when(offState.state()).thenReturn("off");
-        Mockito.when(statesService.getStates(entityId)).thenReturn(List.of(offState));
+        Mockito.when(statesService.getState(entityId)).thenReturn(Optional.of(offState));
         
         // Mock the ObjectMapper to throw JsonProcessingException
         ObjectMapper objectMapper = Mockito.mock(ObjectMapper.class);

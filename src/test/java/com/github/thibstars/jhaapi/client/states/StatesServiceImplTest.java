@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import okhttp3.Call;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -64,5 +65,36 @@ class StatesServiceImplTest {
 
         Assertions.assertNotNull(result, "Result must not be null.");
         Assertions.assertEquals(states, result, "Result must match the expected.");
+    }
+
+    @Test
+    void shouldGetState() throws IOException {
+        Configuration configuration = Mockito.mock(Configuration.class, Mockito.RETURNS_DEEP_STUBS);
+        Mockito.when(configuration.getBaseUrl()).thenReturn(URI.create("http://homeassistant:8123/api/").toURL());
+
+        Call call = Mockito.mock(Call.class);
+        Response response = Mockito.mock(Response.class);
+        ResponseBody responseBody = Mockito.mock(ResponseBody.class);
+        Mockito.when(responseBody.string()).thenReturn("""
+                {
+                  "attributes": {},
+                  "entity_id": "sun.sun",
+                  "last_changed": "2016-05-30T21:43:32.418320+00:00",
+                  "state": "below_horizon"
+                }
+                """);
+        Mockito.when(response.isSuccessful()).thenReturn(true);
+        Mockito.when(response.body()).thenReturn(responseBody);
+        Mockito.when(call.execute()).thenReturn(response);
+        Mockito.when(configuration.getOkHttpClient().newCall(ArgumentMatchers.any(Request.class))).thenReturn(call);
+
+        State state = new State(new Attributes(null, null), "sun.sun", OffsetDateTime.parse("2016-05-30T21:43:32.418320+00:00"), "below_horizon");
+
+        Mockito.when(configuration.getObjectMapper().readValue(responseBody.string(), State.class)).thenReturn(state);
+
+        Optional<State> result = new StatesServiceImpl(configuration).getState("sun.sun");
+
+        Assertions.assertTrue(result.isPresent(), "Result must be present.");
+        Assertions.assertEquals(state, result.get(), "Result must match the expected.");
     }
 }

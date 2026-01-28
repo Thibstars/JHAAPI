@@ -5,7 +5,7 @@ package com.github.thibstars.jhaapi.client.services;
  * 
  * @author Thibault Helsmoortel
  */
-public interface LightService {
+public interface LightService extends ToggleableService {
 
     /**
      * Toggles a light on or off.

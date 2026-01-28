@@ -40,4 +40,11 @@ public class StatesServiceImpl extends BaseService<State> implements StatesServi
 
         return getObjects(uriBuilderFromBaseUrl);
     }
+
+    @Override
+    public Optional<State> getState(String entityId) {
+        LOGGER.info("Getting state of entity {}", entityId);
+
+        return getObject(entityId);
+    }
 }
