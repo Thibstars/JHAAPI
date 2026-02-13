@@ -1,8 +1,10 @@
 package com.github.thibstars.jhaapi.client.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.thibstars.jhaapi.Configuration;
 import com.github.thibstars.jhaapi.client.services.response.Service;
 import com.github.thibstars.jhaapi.internal.BaseService;
+import com.github.thibstars.jhaapi.internal.exceptions.ClientException;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +32,15 @@ public class ServiceServiceImpl extends BaseService<Service> implements ServiceS
         LOGGER.info("Calling service {} from domain {} with data {}", service, domain, serviceData);
 
         post("/" + domain + "/" + service, serviceData);
+    }
+
+    @Override
+    public void callService(String domain, String service, Object serviceData) {
+        try {
+            callService(domain, service, getConfiguration().getObjectMapper().writeValueAsString(serviceData));
+        } catch (JsonProcessingException e) {
+            throw new ClientException("Unable to serialize service data.", e);
+        }
     }
 
     @Override

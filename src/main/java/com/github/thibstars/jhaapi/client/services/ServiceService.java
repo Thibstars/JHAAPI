@@ -12,5 +12,7 @@ public interface ServiceService {
 
     void callService(String domain, String service, String serviceData);
 
+    void callService(String domain, String service, Object serviceData);
+
     void callService(String domain, String service);
 }

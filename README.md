@@ -59,8 +59,7 @@ public record ServiceData(String entityId) { }
 
 private void turnLightOn(ServiceService serviceService) {
     ServiceData myAwesomeLight = new ServiceData("light.myAwesomeLight");
-    String serviceData = configuration.getObjectMapper().writeValueAsString(myAwesomeLight);
-    serviceService.callService("light", "turn_on", serviceData);
+    serviceService.callService("light", "turn_on", myAwesomeLight);
 }
 ````
 

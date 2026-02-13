@@ -82,4 +82,27 @@ class ServiceServiceImplTest {
 
         Mockito.verify(call).execute();
     }
+
+    @Test
+    void shouldCallServiceWithObjectData() throws IOException {
+        Configuration configuration = Mockito.mock(Configuration.class, Mockito.RETURNS_DEEP_STUBS);
+        Mockito.when(configuration.getBaseUrl()).thenReturn(URI.create("http://homeassistant:8123/api/").toURL());
+        ObjectMapper objectMapper = new ObjectMapper();
+        Mockito.when(configuration.getObjectMapper()).thenReturn(objectMapper);
+
+        Call call = Mockito.mock(Call.class);
+        Response response = Mockito.mock(Response.class);
+
+        Mockito.when(response.isSuccessful()).thenReturn(true);
+        Mockito.when(call.execute()).thenReturn(response);
+        Mockito.when(configuration.getOkHttpClient().newCall(ArgumentMatchers.any(Request.class))).thenReturn(call);
+
+        record TestData(String entityId) {}
+        TestData serviceData = new TestData("light.myAwesomeLight");
+
+        ServiceServiceImpl serviceService = new ServiceServiceImpl(configuration);
+        serviceService.callService("light", "turn_on", serviceData);
+
+        Mockito.verify(call).execute();
+    }
 }

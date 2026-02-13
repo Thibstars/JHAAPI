@@ -52,6 +52,10 @@ public abstract class BaseService<T> {
         this.jsonResponseListOfListsConsumer = new JsonResponseListOfListsConsumer<>(objectMapper);
     }
 
+    protected Configuration getConfiguration() {
+        return configuration;
+    }
+
     protected Optional<T> getObject() {
         return getObject("");
     }
