@@ -14,6 +14,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -172,6 +173,30 @@ public abstract class BaseService<T> {
 
         try (Response response = configuration.getOkHttpClient().newCall(request).execute()) {
             LOGGER.info("Got response with code: {}", response.code());
+        } catch (IOException e) {
+            handleException(e);
+            // This code is unreachable as handleException throws an exception
+            throw new RuntimeException("Unreachable code");
+        }
+    }
+
+    protected void postMultipart(String url, MultipartBody body) {
+        String fullUrl = this.url + url;
+
+        Request request = new Request.Builder()
+                .post(body)
+                .url(configuration.getBaseUrl() + "/" + fullUrl)
+                .build();
+
+        LOGGER.info("Performing multipart POST on url: {}", request.url());
+
+        try (Response response = configuration.getOkHttpClient().newCall(request).execute()) {
+            LOGGER.info("Got response with code: {}", response.code());
+            if (response.code() >= 400) {
+                String responseBody = response.body() != null ? response.body().string() : "No body";
+                LOGGER.error("Error response body: {}", responseBody);
+                System.err.println("[DEBUG_LOG] postMultipart error: " + responseBody);
+            }
         } catch (IOException e) {
             handleException(e);
             // This code is unreachable as handleException throws an exception
