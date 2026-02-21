@@ -1,15 +1,18 @@
 package com.github.thibstars.jhaapi.client.config;
 
 import com.github.thibstars.jhaapi.Configuration;
+import com.github.thibstars.jhaapi.client.config.response.CheckConfigResponse;
 import com.github.thibstars.jhaapi.client.config.response.Config;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Optional;
 import okhttp3.Call;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -78,5 +81,39 @@ class ConfigServiceImplTest {
 
         Assertions.assertNotNull(result, "Result must not be null.");
         Assertions.assertEquals(config, result, "Result must match the expected.");
+    }
+
+    @Test
+    void shouldCheckConfig() throws IOException {
+        Configuration configuration = Mockito.mock(Configuration.class, Mockito.RETURNS_DEEP_STUBS);
+        Mockito.when(configuration.getBaseUrl()).thenReturn(URI.create("http://homeassistant:8123/api/").toURL());
+
+        Call call = Mockito.mock(Call.class);
+        Response response = Mockito.mock(Response.class);
+        ResponseBody responseBody = Mockito.mock(ResponseBody.class);
+        Mockito.when(responseBody.string()).thenReturn("""
+                {
+                   "result": "valid",
+                   "errors": null
+                }
+                """);
+        Mockito.when(response.isSuccessful()).thenReturn(true);
+        Mockito.when(response.body()).thenReturn(responseBody);
+        Mockito.when(call.execute()).thenReturn(response);
+        Mockito.when(configuration.getOkHttpClient().newCall(ArgumentMatchers.any(Request.class))).thenReturn(call);
+
+        CheckConfigResponse checkConfigResponse = new CheckConfigResponse("valid", null);
+        Mockito.when(configuration.getObjectMapper().readValue(responseBody.string(), CheckConfigResponse.class)).thenReturn(checkConfigResponse);
+
+        Optional<CheckConfigResponse> result = new ConfigServiceImpl(configuration).checkConfig();
+
+        Assertions.assertTrue(result.isPresent(), "Result must be present.");
+        Assertions.assertEquals("valid", result.get().result());
+
+        ArgumentCaptor<Request> requestCaptor = ArgumentCaptor.forClass(Request.class);
+        Mockito.verify(configuration.getOkHttpClient()).newCall(requestCaptor.capture());
+        Request capturedRequest = requestCaptor.getValue();
+        Assertions.assertEquals("POST", capturedRequest.method());
+        Assertions.assertEquals("http://homeassistant:8123/api/config/core/check_config", capturedRequest.url().toString());
     }
 }

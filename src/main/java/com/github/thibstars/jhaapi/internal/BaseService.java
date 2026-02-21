@@ -57,7 +57,7 @@ public abstract class BaseService<T> {
         return configuration;
     }
 
-    protected Optional<T> getObject() {
+    public Optional<T> getObject() {
         return getObject("");
     }
 
@@ -90,7 +90,7 @@ public abstract class BaseService<T> {
         return getObjects(request);
     }
 
-    protected List<T> getObjects(URIBuilder uriBuilder) {
+    public List<T> getObjects(URIBuilder uriBuilder) {
         try {
             Request request = new Request.Builder()
                     .url(uriBuilder.build().toString())
@@ -136,7 +136,7 @@ public abstract class BaseService<T> {
         }
     }
 
-    protected void post(String url, String body) {
+    protected Optional<String> post(String url, String body) {
         String fullUrl = this.url + url;
 
         try {
@@ -154,6 +154,8 @@ public abstract class BaseService<T> {
 
         try (Response response = configuration.getOkHttpClient().newCall(request).execute()) {
             LOGGER.info("Got response with code: {}", response.code());
+
+            return STRING_RESPONSE_CONSUMER.apply(response);
         } catch (IOException e) {
             handleException(e);
             // This code is unreachable as handleException throws an exception
@@ -161,18 +163,20 @@ public abstract class BaseService<T> {
         }
     }
 
-    protected void post(String url) {
-        String fullUrl = this.url + url;
+    public Optional<T> post(String path) {
+        String fullUrl = this.url + (path.isEmpty() ? "" : "/" + path);
 
         Request request = new Request.Builder()
                 .post(RequestBody.create("", null))
-                .url(configuration.getBaseUrl() + "/" + fullUrl)
+                .url(configuration.getBaseUrl() + (configuration.getBaseUrl().toString().endsWith("/") ? "" : "/") + fullUrl)
                 .build();
 
         LOGGER.info("Performing POST on url: {}", request.url());
 
         try (Response response = configuration.getOkHttpClient().newCall(request).execute()) {
             LOGGER.info("Got response with code: {}", response.code());
+
+            return jsonResponseObjectConsumer.apply(response, clazz);
         } catch (IOException e) {
             handleException(e);
             // This code is unreachable as handleException throws an exception

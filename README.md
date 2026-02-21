@@ -87,11 +87,50 @@ ToggleableService inputBooleanService = new ToggleableServiceImpl("input_boolean
 inputBooleanService.toggle("my_boolean");
 ````
 
-Upload media to your HomeAssistance instance:
+### Upload media to your Home Assistant instance
 
 ````java
 MediaService mediaService = new MediaServiceImpl(configuration);
 mediaService.uploadMedia(new File("path/to/media.mp3"));
+````
+
+### Calendars API
+
+Fetch calendars and events (optionally with a time range):
+
+````java
+CalendarService calendarService = new CalendarServiceImpl(configuration);
+
+// Get all calendars
+List<Calendar> calendars = calendarService.getCalendars();
+
+// Get events for a specific calendar with an optional time window
+OffsetDateTime start = OffsetDateTime.now().minusDays(1);
+OffsetDateTime end = OffsetDateTime.now().plusDays(1);
+List<CalendarEvent> events = calendarService.getCalendarEvents("calendar.personal", start, end);
+````
+
+### Templates API
+
+Render a Home Assistant template via the REST API:
+
+````java
+TemplateService templateService = new TemplateServiceImpl(configuration);
+String rendered = templateService.renderTemplate("The state of sun is {{ states('sun.sun') }}");
+System.out.println(rendered);
+````
+
+### Config API — Check configuration
+
+````java
+ConfigService configService = new ConfigServiceImpl(configuration);
+configService.checkConfig().ifPresentOrElse(
+        result -> {
+            System.out.println("Result: " + result.result());
+            System.out.println("Errors: " + result.errors());
+        },
+        () -> System.out.println("No result returned")
+);
 ````
 
 ---
