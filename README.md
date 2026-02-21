@@ -87,5 +87,12 @@ ToggleableService inputBooleanService = new ToggleableServiceImpl("input_boolean
 inputBooleanService.toggle("my_boolean");
 ````
 
+Upload media to your HomeAssistance instance:
+
+````java
+MediaService mediaService = new MediaServiceImpl(configuration);
+mediaService.uploadMedia(new File("path/to/media.mp3"));
+````
+
 ---
 Apache 2.0 License
