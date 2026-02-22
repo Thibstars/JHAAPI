@@ -133,5 +133,29 @@ configService.checkConfig().ifPresentOrElse(
 );
 ````
 
+### WebSocket API — Real-time Events
+
+Active listening to Home Assistant events via WebSocket:
+
+````java
+WebSocketService webSocketService = new WebSocketServiceImpl(configuration);
+
+// Optional: establish early; it will also auto-connect on first subscribe
+webSocketService.connect();
+
+int subscriptionId = webSocketService.subscribeToEvents("state_changed", new WebSocketService.WebSocketEventListener() {
+    @Override public void onOpen() { System.out.println("Websocket opened"); }
+    @Override public void onClosed(int code, String reason) { System.out.println("Websocket closed: " + reason); }
+    @Override public void onFailure(Throwable throwable) { throwable.printStackTrace(); }
+    @Override public void onEvent(String eventType, com.fasterxml.jackson.databind.JsonNode payload) {
+        System.out.println("Event: " + eventType + " -> " + payload);
+    }
+});
+
+// Later, to stop receiving these events
+// webSocketService.unsubscribe(subscriptionId);
+// webSocketService.close();
+````
+
 ---
 Apache 2.0 License
