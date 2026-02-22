@@ -157,5 +157,22 @@ int subscriptionId = webSocketService.subscribeToEvents("state_changed", new Web
 // webSocketService.close();
 ````
 
+### Entity Events API
+
+A specialized API to listen for entities being turned on or off:
+
+````java
+WebSocketService webSocketService = new WebSocketServiceImpl(configuration);
+EntityEventService entityEventService = new EntityEventServiceImpl(webSocketService);
+
+entityEventService.onTurnedOn("light.living_room", id -> System.out.println(id + " is now ON!"));
+entityEventService.onTurnedOff("light.living_room", id -> System.out.println(id + " is now OFF!"));
+
+entityEventService.start(); // Connects and subscribes to events
+
+// Later, to stop listening
+// entityEventService.stop();
+````
+
 ---
 Apache 2.0 License
