@@ -6,7 +6,7 @@
 
     <groupId>com.github.thibstars</groupId>
     <artifactId>JHAAPI</artifactId>
-    <version>1.0.13-SNAPSHOT</version>
+    <version>1.0.13</version>
 
     <name>JHAAPI</name>
     <description>Java Home Assistant API</description>
