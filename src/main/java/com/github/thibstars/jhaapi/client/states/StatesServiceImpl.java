@@ -47,4 +47,26 @@ public class StatesServiceImpl extends BaseService<State> implements StatesServi
 
         return getObject(entityId);
     }
+
+    @Override
+    public Optional<State> updateState(String entityId, String state, String friendlyName) {
+        return updateState(entityId, state, friendlyName, false);
+    }
+
+    @Override
+    public Optional<State> updateState(String entityId, String state, String friendlyName, boolean readOnly) {
+        LOGGER.info("Updating state of entity {} to {} (read-only: {})", entityId, state, readOnly);
+
+        String body = String.format("{\"state\": \"%s\", \"attributes\": {\"friendly_name\": \"%s\", \"read_only\": %b}}", state, friendlyName, readOnly);
+
+        return post(entityId, body)
+                .flatMap(response -> {
+                    try {
+                        return Optional.of(getConfiguration().getObjectMapper().readValue(response, State.class));
+                    } catch (Exception e) {
+                        LOGGER.error("Unable to deserialize state update response.", e);
+                        return Optional.empty();
+                    }
+                });
+    }
 }

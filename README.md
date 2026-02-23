@@ -33,7 +33,9 @@ According to Home Assistant's documentation:
 
 Here's a minimalistic example on how to retrieve your Home Assistant status using JHAAPI:
 ````java
-Configuration configuration = new Configuration("myLongLivedAccessToken");
+Configuration configuration = Configuration.builder()
+        .token("myLongLivedAccessToken")
+        .build();
 
 StatusService statusService = new StatusServiceImpl(configuration);
 
@@ -45,7 +47,12 @@ statusService.getStatus()
 ````
 
 If your instance is running on a different URL, you could also pass that to your configuration:  
-`new Configuration("http://homeassistant:8123/api", "myLongLivedAccessToken");`
+````java
+Configuration configuration = Configuration.builder()
+        .baseUrl("http://homeassistant:8123/api")
+        .token("myLongLivedAccessToken")
+        .build();
+````
 
 ### Calling a service within a specific domain
 
@@ -173,6 +180,36 @@ entityEventService.start(); // Connects and subscribes to events
 // Later, to stop listening
 // entityEventService.stop();
 ````
+
+### Managed Entity
+
+Optionally, you can have JHAAPI manage an entity in Home Assistant for you. This is useful for representing your application itself as an entity in Home Assistant (e.g.: to see its status, or to use its state to trigger other things in Home Assistant).
+
+To enable this, you need to configure it in your `Configuration` object:
+
+````java
+Configuration configuration = Configuration.builder()
+        .baseUrl("http://homeassistant:8123/api")
+        .token("myLongLivedAccessToken")
+        .entityEnabled(true)
+        .entityId("switch.my_awesome_app")
+        .entityFriendlyName("My Awesome App")
+        .entityReadOnly(false) // optional, default is true
+        .entityShutdownEnabled(true) // optional, default is false
+        .build();
+
+// Initialize the entity management service
+StatesService statesService = new StatesServiceImpl(configuration);
+EntityManagementService entityManagementService = new EntityManagementServiceImpl(configuration, statesService);
+
+// This will:
+// 1. Create the entity if it doesn't exist
+// 2. Turn the entity on
+// 3. Register a JVM shutdown hook to turn the entity off upon termination
+entityManagementService.initialize();
+````
+
+By default, this feature is **disabled**.
 
 ---
 Apache 2.0 License

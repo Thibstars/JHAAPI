@@ -19,14 +19,17 @@ public class EntityEventServiceImpl implements EntityEventService, WebSocketServ
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityEventServiceImpl.class);
     private static final String EVENT_TYPE_STATE_CHANGED = "state_changed";
+    private static final String EVENT_TYPE_CALL_SERVICE = "call_service";
     private static final String STATE_ON = "on";
     private static final String STATE_OFF = "off";
+    private static final String SERVICE_TURN_ON = "turn_on";
+    private static final String SERVICE_TURN_OFF = "turn_off";
 
     private final WebSocketService webSocketService;
     private final Map<String, Set<Consumer<String>>> onCallbacksByEntityId = new ConcurrentHashMap<>();
     private final Map<String, Set<Consumer<String>>> offCallbacksByEntityId = new ConcurrentHashMap<>();
 
-    private int subscriptionId = -1;
+    private final Set<Integer> subscriptionIds = ConcurrentHashMap.newKeySet();
 
     /**
      * Creates a new EntityEventServiceImpl.
@@ -51,29 +54,34 @@ public class EntityEventServiceImpl implements EntityEventService, WebSocketServ
 
     @Override
     public void start() {
-        if (subscriptionId == -1) {
+        if (subscriptionIds.isEmpty()) {
             webSocketService.connect();
-            subscriptionId = webSocketService.subscribeToEvents(EVENT_TYPE_STATE_CHANGED, this);
-            LOGGER.info("Subscribed to state_changed events with ID {}", subscriptionId);
+            subscriptionIds.add(webSocketService.subscribeToEvents(EVENT_TYPE_STATE_CHANGED, this));
+            subscriptionIds.add(webSocketService.subscribeToEvents(EVENT_TYPE_CALL_SERVICE, this));
+            LOGGER.info("Subscribed to events with IDs {}", subscriptionIds);
         }
     }
 
     @Override
     public void stop() {
-        if (subscriptionId != -1) {
-            webSocketService.unsubscribe(subscriptionId);
-            subscriptionId = -1;
+        if (!subscriptionIds.isEmpty()) {
+            subscriptionIds.forEach(webSocketService::unsubscribe);
+            subscriptionIds.clear();
             webSocketService.close();
-            LOGGER.info("Unsubscribed from state_changed events");
+            LOGGER.info("Unsubscribed from events");
         }
     }
 
     @Override
     public void onEvent(String eventType, JsonNode eventPayload) {
-        if (!EVENT_TYPE_STATE_CHANGED.equals(eventType)) {
-            return;
+        if (EVENT_TYPE_STATE_CHANGED.equals(eventType)) {
+            handleStateChanged(eventPayload);
+        } else if (EVENT_TYPE_CALL_SERVICE.equals(eventType)) {
+            handleCallService(eventPayload);
         }
+    }
 
+    private void handleStateChanged(JsonNode eventPayload) {
         JsonNode dataNode = eventPayload.path("data");
         String entityId = dataNode.path("entity_id").asText();
         String newState = dataNode.path("new_state").path("state").asText();
@@ -89,6 +97,29 @@ public class EntityEventServiceImpl implements EntityEventService, WebSocketServ
         } else if (STATE_OFF.equals(newState)) {
             LOGGER.debug("Entity {} turned off", entityId);
             notifyCallbacks(offCallbacksByEntityId, entityId);
+        }
+    }
+
+    private void handleCallService(JsonNode eventPayload) {
+        JsonNode dataNode = eventPayload.path("data");
+        String service = dataNode.path("service").asText();
+        JsonNode serviceData = dataNode.path("service_data");
+        JsonNode entityIdNode = serviceData.path("entity_id");
+
+        if (SERVICE_TURN_ON.equals(service)) {
+            notifyIfMatching(onCallbacksByEntityId, entityIdNode);
+        } else if (SERVICE_TURN_OFF.equals(service)) {
+            notifyIfMatching(offCallbacksByEntityId, entityIdNode);
+        }
+    }
+
+    private void notifyIfMatching(Map<String, Set<Consumer<String>>> callbacksByEntityId, JsonNode entityIdNode) {
+        if (entityIdNode.isTextual()) {
+            notifyCallbacks(callbacksByEntityId, entityIdNode.asText());
+        } else if (entityIdNode.isArray()) {
+            for (JsonNode idNode : entityIdNode) {
+                notifyCallbacks(callbacksByEntityId, idNode.asText());
+            }
         }
     }
 

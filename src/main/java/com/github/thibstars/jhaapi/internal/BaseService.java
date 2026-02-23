@@ -64,7 +64,7 @@ public abstract class BaseService<T> {
     @SuppressWarnings("unchecked") // We can actually safely cast to T as we know what it is via the clazz field
     protected Optional<T> getObject(String path) {
         Request request = new Request.Builder()
-                .url(configuration.getBaseUrl() + "/" + url + (path.isEmpty() ? "" : "/" + path))
+                .url(configuration.getBaseUrl() + (configuration.getBaseUrl().toString().endsWith("/") ? "" : "/") + url + (path.isEmpty() ? "" : "/" + path))
                 .build();
 
         LOGGER.info("Getting object from url: {}", request.url());
@@ -84,7 +84,7 @@ public abstract class BaseService<T> {
 
     protected List<T> getObjects() {
         Request request = new Request.Builder()
-                .url(configuration.getBaseUrl() + "/" + this.url)
+                .url(configuration.getBaseUrl() + (configuration.getBaseUrl().toString().endsWith("/") ? "" : "/") + this.url)
                 .build();
 
         return getObjects(request);
@@ -119,10 +119,11 @@ public abstract class BaseService<T> {
     }
 
     protected List<List<T>> getObjectsOfObjects(String url) {
-        String fullUrl = this.url + url;
+        String normalized = url != null && url.startsWith("/") ? url.substring(1) : url;
+        String fullUrl = this.url + (normalized == null || normalized.isEmpty() ? "" : "/" + normalized);
 
         Request request = new Request.Builder()
-                .url(configuration.getBaseUrl() + "/" + fullUrl)
+                .url(configuration.getBaseUrl() + (configuration.getBaseUrl().toString().endsWith("/") ? "" : "/") + fullUrl)
                 .build();
 
         LOGGER.info("Getting objects of objects from url: {}", request.url());
@@ -137,7 +138,8 @@ public abstract class BaseService<T> {
     }
 
     protected Optional<String> post(String url, String body) {
-        String fullUrl = this.url + url;
+        String normalized = url != null && url.startsWith("/") ? url.substring(1) : url;
+        String fullUrl = this.url + (normalized == null || normalized.isEmpty() ? "" : "/" + normalized);
 
         try {
             configuration.getObjectMapper().readTree(body);
@@ -147,7 +149,7 @@ public abstract class BaseService<T> {
 
         Request request = new Request.Builder()
                 .post(RequestBody.create(body, JSON_MEDIA_TYPE))
-                .url(configuration.getBaseUrl() + "/" + fullUrl)
+                .url(configuration.getBaseUrl() + (configuration.getBaseUrl().toString().endsWith("/") ? "" : "/") + fullUrl)
                 .build();
 
         LOGGER.info("Performing POST on url: {}", request.url());
@@ -185,11 +187,12 @@ public abstract class BaseService<T> {
     }
 
     protected void postMultipart(String url, MultipartBody body) {
-        String fullUrl = this.url + url;
+        String normalized = url != null && url.startsWith("/") ? url.substring(1) : url;
+        String fullUrl = this.url + (normalized == null || normalized.isEmpty() ? "" : "/" + normalized);
 
         Request request = new Request.Builder()
                 .post(body)
-                .url(configuration.getBaseUrl() + "/" + fullUrl)
+                .url(configuration.getBaseUrl() + (configuration.getBaseUrl().toString().endsWith("/") ? "" : "/") + fullUrl)
                 .build();
 
         LOGGER.info("Performing multipart POST on url: {}", request.url());

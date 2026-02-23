@@ -14,4 +14,17 @@ public interface StatesService {
     List<State> getStates(String entityId);
 
     Optional<State> getState(String entityId);
+    
+    Optional<State> updateState(String entityId, String state, String friendlyName);
+
+    /**
+     * Updates the state of an entity.
+     *
+     * @param entityId the ID of the entity to update
+     * @param state the new state
+     * @param friendlyName the friendly name of the entity
+     * @param readOnly whether the entity should be read-only in Home Assistant
+     * @return an optional containing the updated state
+     */
+    Optional<State> updateState(String entityId, String state, String friendlyName, boolean readOnly);
 }

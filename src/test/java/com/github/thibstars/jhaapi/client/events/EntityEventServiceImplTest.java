@@ -89,6 +89,56 @@ class EntityEventServiceImplTest {
     }
 
     @Test
+    void shouldTriggerOnTurnedOffViaCallService() throws Exception {
+        AtomicBoolean called = new AtomicBoolean(false);
+        String entityId = "switch.managed_app";
+        entityEventService.onTurnedOff(entityId, id -> {
+            Assertions.assertEquals(entityId, id);
+            called.set(true);
+        });
+
+        JsonNode eventPayload = objectMapper.readTree("{" +
+                "  \"event_type\": \"call_service\"," +
+                "  \"data\": {" +
+                "    \"domain\": \"switch\"," +
+                "    \"service\": \"turn_off\"," +
+                "    \"service_data\": {" +
+                "      \"entity_id\": \"switch.managed_app\"" +
+                "    }" +
+                "  }" +
+                "}");
+
+        entityEventService.onEvent("call_service", eventPayload);
+
+        Assertions.assertTrue(called.get(), "Callback should have been called via call_service (string)");
+    }
+
+    @Test
+    void shouldTriggerOnTurnedOffViaCallServiceArray() throws Exception {
+        AtomicBoolean called = new AtomicBoolean(false);
+        String entityId = "switch.managed_app";
+        entityEventService.onTurnedOff(entityId, id -> {
+            Assertions.assertEquals(entityId, id);
+            called.set(true);
+        });
+
+        JsonNode eventPayload = objectMapper.readTree("{" +
+                "  \"event_type\": \"call_service\"," +
+                "  \"data\": {" +
+                "    \"domain\": \"switch\"," +
+                "    \"service\": \"turn_off\"," +
+                "    \"service_data\": {" +
+                "      \"entity_id\": [\"switch.other\", \"switch.managed_app\"]" +
+                "    }" +
+                "  }" +
+                "}");
+
+        entityEventService.onEvent("call_service", eventPayload);
+
+        Assertions.assertTrue(called.get(), "Callback should have been called via call_service (array)");
+    }
+
+    @Test
     void shouldNotTriggerWhenStateDidNotChange() throws Exception {
         AtomicBoolean called = new AtomicBoolean(false);
         String entityId = "light.living_room";

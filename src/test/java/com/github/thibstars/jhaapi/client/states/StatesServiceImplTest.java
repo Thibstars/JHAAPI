@@ -97,4 +97,37 @@ class StatesServiceImplTest {
         Assertions.assertTrue(result.isPresent(), "Result must be present.");
         Assertions.assertEquals(state, result.get(), "Result must match the expected.");
     }
+
+    @Test
+    void shouldUpdateState() throws IOException {
+        Configuration configuration = Mockito.mock(Configuration.class, Mockito.RETURNS_DEEP_STUBS);
+        Mockito.when(configuration.getBaseUrl()).thenReturn(URI.create("http://homeassistant:8123/api/").toURL());
+
+        Call call = Mockito.mock(Call.class);
+        Response response = Mockito.mock(Response.class);
+        ResponseBody responseBody = Mockito.mock(ResponseBody.class);
+        Mockito.when(responseBody.string()).thenReturn("""
+                {
+                  "attributes": {"friendly_name": "JHAAPI Application"},
+                  "entity_id": "switch.jhaapi_application",
+                  "last_changed": "2026-02-22T15:40:00+00:00",
+                  "state": "on"
+                }
+                """);
+        Mockito.when(response.isSuccessful()).thenReturn(true);
+        Mockito.when(response.body()).thenReturn(responseBody);
+        Mockito.when(call.execute()).thenReturn(response);
+        Mockito.when(configuration.getOkHttpClient().newCall(ArgumentMatchers.argThat(request ->
+                request.url().toString().endsWith("/api/states/switch.jhaapi_application")
+        ))).thenReturn(call);
+
+        State state = new State(new Attributes("JHAAPI Application", null), "switch.jhaapi_application", OffsetDateTime.parse("2026-02-22T15:40:00+00:00"), "on");
+
+        Mockito.when(configuration.getObjectMapper().readValue(ArgumentMatchers.anyString(), ArgumentMatchers.eq(State.class))).thenReturn(state);
+
+        Optional<State> result = new StatesServiceImpl(configuration).updateState("switch.jhaapi_application", "on", "JHAAPI Application");
+
+        Assertions.assertTrue(result.isPresent(), "Result must be present.");
+        Assertions.assertEquals(state, result.get(), "Result must match the expected.");
+    }
 }
