@@ -10,9 +10,12 @@ import java.time.OffsetDateTime;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record Update(
         UpdateAttributes attributes,
-        @JsonProperty("entity_id") String entityId,
-        @JsonProperty("last_changed") OffsetDateTime lastChanged,
-        @JsonProperty("last_updated") OffsetDateTime lastUpdated,
+        @JsonProperty("entity_id")
+        String entityId,
+        @JsonProperty("last_changed")
+        OffsetDateTime lastChanged,
+        @JsonProperty("last_updated")
+        OffsetDateTime lastUpdated,
         String state
 ) {
 
