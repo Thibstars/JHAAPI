@@ -2,7 +2,7 @@
 # JHAAPI [![](https://jitpack.io/v/Thibstars/JHAAPI.svg)](https://jitpack.io/#Thibstars/JHAAPI)
 Java Home Assistant API
 
-Home Assistant exposes a [REST API](https://developers.home-assistant.io/docs/api/rest/), for which JHAAPI serves as a client.
+Home Assistant exposes external APIs ([REST API](https://developers.home-assistant.io/docs/api/rest/) and [WebSocket API](https://developers.home-assistant.io/docs/api/websocket)), for which JHAAPI serves as a client.
 
 Why use JHAAPI?
 - **Type-safe**: JHAAPI uses Java records to represent the JSON responses from Home Assistant, which provides type safety and makes it easier to work with the data.
