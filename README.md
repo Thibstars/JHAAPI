@@ -4,6 +4,22 @@ Java Home Assistant API
 
 Home Assistant exposes a [REST API](https://developers.home-assistant.io/docs/api/rest/), for which JHAAPI serves as a client.
 
+Why use JHAAPI?
+- **Type-safe**: JHAAPI uses Java records to represent the JSON responses from Home Assistant, which provides type safety and makes it easier to work with the data.
+- **Easy to use**: JHAAPI provides a simple and intuitive API for interacting with Home Assistant, with clear documentation and examples.
+- **You don't need to be an administrator on the target Home Assistant instance**: As long as you have a valid token, you can use JHAAPI to interact with your Home Assistant instance.
+- **Keep CPU usage and memory on Home Assistant instance low**: While interacting with Home Assistant through JHAAPI, you can remove the need for running and storing scripts and automations on the Home Assistant side.
+- **Supports WebSockets**: JHAAPI supports the Home Assistant WebSocket API.
+- ...and more!
+
+Some use cases for JHAAPI may include:
+- **Augment your Java game by interacting with devices at home**: Use lights, switches and media players to set the scene.
+- **Integrate with other systems**: Control your home from other systems, such as your car or your phone.
+- **Automate your home**: Turn lights on and off based on weather conditions.
+- **Setup virtual sensors managed by your application**: Expose aspects of your application as entities/sensors in Home Assistant. You could use it to represent a hardware device!
+- **Java equivalent of an addon**: Create a Home Assistant addon that runs in your Java application.
+- ...and more!
+
 ## Installation
 ### Maven
 
