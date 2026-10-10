@@ -89,7 +89,7 @@ class HistoryServiceImplTest {
         List<List<StateChange>> result = new HistoryServiceImpl(configuration).getHistory(Set.of("sun.sun"));
 
         Assertions.assertNotNull(result, "Result must not be null.");
-        Assertions.assertNotNull(result.getFirst(), "Sub list must not be null.");
+        Assertions.assertNotNull(result.get(0), "Sub list must not be null.");
         Assertions.assertEquals(history, result, "Sub list must match the expected.");
     }
 

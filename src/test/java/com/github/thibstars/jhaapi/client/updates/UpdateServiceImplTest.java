@@ -81,7 +81,7 @@ class UpdateServiceImplTest {
         List<Update> availableUpdates = updateService.getAvailableUpdates();
 
         Assertions.assertEquals(1, availableUpdates.size());
-        Update update = availableUpdates.getFirst();
+        Update update = availableUpdates.get(0);
         Assertions.assertEquals("update.update_1", update.entityId());
         Assertions.assertEquals("on", update.state());
         Assertions.assertTrue(update.isUpdateAvailable());

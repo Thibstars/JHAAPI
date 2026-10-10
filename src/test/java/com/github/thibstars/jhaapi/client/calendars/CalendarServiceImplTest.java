@@ -58,7 +58,7 @@ class CalendarServiceImplTest {
 
         Assertions.assertNotNull(calendars);
         Assertions.assertEquals(1, calendars.size());
-        Assertions.assertEquals("calendar.personal", calendars.getFirst().entityId());
+        Assertions.assertEquals("calendar.personal", calendars.get(0).entityId());
     }
 
     @Test
@@ -86,7 +86,7 @@ class CalendarServiceImplTest {
 
         Assertions.assertNotNull(events);
         Assertions.assertEquals(1, events.size());
-        Assertions.assertEquals("Meeting", events.getFirst().summary());
+        Assertions.assertEquals("Meeting", events.get(0).summary());
 
         ArgumentCaptor<Request> requestCaptor = ArgumentCaptor.forClass(Request.class);
         Mockito.verify(okHttpClient, Mockito.atLeastOnce()).newCall(requestCaptor.capture());
