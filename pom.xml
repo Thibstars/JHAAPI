@@ -19,7 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <okhttp.version>5.5.0</okhttp.version>
-        <jackson.version>2.22.2</jackson.version>
+        <jackson.version>2.22.3</jackson.version>
         <logback.version>1.6.5</logback.version>
         <httpcore5.version>5.4.4</httpcore5.version>
 
