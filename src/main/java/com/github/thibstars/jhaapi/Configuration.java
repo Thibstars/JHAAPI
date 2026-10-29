@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.thibstars.jhaapi.internal.exceptions.ConfigurationException;
 import com.github.thibstars.jhaapi.internal.interceptors.RequestTokenInterceptor;
+import com.github.thibstars.jhaapi.internal.interceptors.RetryInterceptor;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -50,6 +51,7 @@ public class Configuration {
         this.longLivedAccessToken = builder.longLivedAccessToken;
         this.okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(new RequestTokenInterceptor(this))
+                .addInterceptor(new RetryInterceptor(5, 500))
                 .build();
         this.objectMapper = new ObjectMapper()
                 .registerModule(new JavaTimeModule())
