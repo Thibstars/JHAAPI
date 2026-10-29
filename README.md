@@ -117,6 +117,45 @@ MediaService mediaService = new MediaServiceImpl(configuration);
 mediaService.uploadMedia(new File("path/to/media.mp3"));
 ````
 
+### Media Player API
+
+Control media players (playback, volume, media playback, sound mode, sources):
+
+````java
+MediaPlayerService mediaPlayerService = new MediaPlayerServiceImpl(configuration);
+
+// Basic controls & toggling
+mediaPlayerService.turnOn("living_room_tv");
+mediaPlayerService.toggle("living_room_tv");
+
+// Playback controls
+mediaPlayerService.play("living_room_speaker");
+mediaPlayerService.pause("living_room_speaker");
+mediaPlayerService.playPause("living_room_speaker");
+mediaPlayerService.stop("living_room_speaker");
+mediaPlayerService.nextTrack("living_room_speaker");
+mediaPlayerService.previousTrack("living_room_speaker");
+
+// Volume & mute controls
+mediaPlayerService.setVolume("living_room_speaker", 0.65); // 0.0 to 1.0
+mediaPlayerService.muteVolume("living_room_speaker", false);
+mediaPlayerService.volumeUp("living_room_speaker");
+mediaPlayerService.volumeDown("living_room_speaker");
+
+// Play specific media (URL, stream, file)
+mediaPlayerService.playMedia("living_room_speaker", "http://example.com/stream.mp3", "music");
+
+// Source, sound mode, shuffle, and repeat
+mediaPlayerService.selectSource("living_room_tv", "HDMI 1");
+mediaPlayerService.selectSoundMode("living_room_tv", "Stereo");
+mediaPlayerService.setShuffle("living_room_speaker", true);
+mediaPlayerService.setRepeat("living_room_speaker", "all"); // "off", "all", "one"
+
+// Multiroom speaker grouping
+mediaPlayerService.join("living_room_speaker", List.of("kitchen_speaker", "bedroom_speaker"));
+mediaPlayerService.unjoin("kitchen_speaker");
+````
+
 ### Calendars API
 
 Fetch calendars and events (optionally with a time range):
