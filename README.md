@@ -133,6 +133,25 @@ OffsetDateTime end = OffsetDateTime.now().plusDays(1);
 List<CalendarEvent> events = calendarService.getCalendarEvents("calendar.personal", start, end);
 ````
 
+### Todo API
+
+Fetch todo lists and todo items (optionally with a time range):
+
+````java
+TodoService todoService = new TodoServiceImpl(configuration);
+
+// Get all todo lists
+List<Todo> todos = todoService.getTodos();
+
+// Get items for a specific todo list (optionally with start and end due date filter)
+List<TodoItem> allItems = todoService.getTodoItems("todo.shopping_list", null, null);
+
+// Get items due within a specific time window
+OffsetDateTime start = OffsetDateTime.now();
+OffsetDateTime end = OffsetDateTime.now().plusDays(7);
+List<TodoItem> upcomingItems = todoService.getTodoItems("todo.shopping_list", start, end);
+````
+
 ### Templates API
 
 Render a Home Assistant template via the REST API:
