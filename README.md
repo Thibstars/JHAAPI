@@ -156,6 +156,29 @@ mediaPlayerService.join("living_room_speaker", List.of("kitchen_speaker", "bedro
 mediaPlayerService.unjoin("kitchen_speaker");
 ````
 
+### Notification API
+
+Send broadcast notifications, platform/device-specific alerts, entity messages, and manage persistent UI notifications:
+
+````java
+NotificationService notificationService = new NotificationServiceImpl(configuration);
+
+// Broadcast notifications via notify.notify
+notificationService.sendNotification("Motion detected in backyard!", "Security Alert");
+
+// Service/platform-specific notifications with optional extra payload
+notificationService.sendNotification("mobile_app_phone", "Front door unlocked", "Access Notice");
+notificationService.sendNotification("mobile_app_phone", "Camera alert", "Security", Map.of("image", "https://example.com/snapshot.jpg"));
+
+// Entity-targeted message via notify.send_message
+notificationService.sendMessage("notify.mobile_app_phone", "System update completed successfully.", "Update Status");
+
+// Persistent UI notifications
+notificationService.createPersistentNotification("Scheduled maintenance tonight at midnight.", "Maintenance", "maint_001");
+notificationService.dismissPersistentNotification("maint_001");
+notificationService.dismissAllPersistentNotifications();
+````
+
 ### Calendars API
 
 Fetch calendars and events (optionally with a time range):
