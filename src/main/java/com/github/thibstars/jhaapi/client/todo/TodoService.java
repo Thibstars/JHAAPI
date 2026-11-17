@@ -27,4 +27,59 @@ public interface TodoService {
      */
     List<TodoItem> getTodoItems(String entityId, OffsetDateTime start, OffsetDateTime end);
 
+    /**
+     * Returns a list of todo events for the given todo entity.
+     * 
+     * @param entityId the todo entity id
+     * @return a list of todo events
+     */
+    List<TodoItem> getTodoItems(String entityId);
+
+    /**
+     * Returns a list of todo events for the given todo entity with the state
+     * "completed".
+     * 
+     * @param entityId the todo entity id
+     * @return a list of todo events
+     */
+    List<TodoItem> getCompletedTodoItems(String entityId);
+
+    /**
+     * Returns a list of todo events for the given todo entity with the state
+     * "needs_action".
+     * 
+     * @param entityId the todo entity id
+     * @return a list of todo events
+     */
+    List<TodoItem> getUncompletedTodoItems(String entityId);
+
+    /**
+     * Adds a new todo item to the given todo entity with the specified summary.
+     * 
+     * @param entityId
+     * @param summary
+     * @return success
+     */
+    boolean addTodoItem(String entityId, String summary);
+
+    /**
+     * Removes a todo item from the given todo entity with the specified summary.
+     * 
+     * @param entityId
+     * @param summary
+     * @return success
+     */
+    boolean removeTodoItem(String entityId, String summary);
+
+    /**
+     * Sets the completion status of a todo item for the given todo entity with the
+     * specified summary.
+     * 
+     * @param entityId
+     * @param summary
+     * @param completed
+     * @return success
+     */
+    boolean setTodoItemCompleted(String entityId, String summary, boolean completed);
+
 }

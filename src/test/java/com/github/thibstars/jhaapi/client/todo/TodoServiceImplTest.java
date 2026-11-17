@@ -12,6 +12,7 @@ import com.github.thibstars.jhaapi.client.todo.response.TodoItem;
 import com.github.thibstars.jhaapi.internal.exceptions.ClientException;
 import java.io.IOException;
 import java.net.URI;
+import okio.Buffer;
 import java.time.OffsetDateTime;
 import java.util.List;
 import okhttp3.Call;
@@ -129,6 +130,45 @@ class TodoServiceImplTest {
     }
 
     @Test
+    void shouldGetCompletedAndUncompletedTodoItems() throws IOException {
+        var configuration = Mockito.mock(Configuration.class);
+        var okHttpClient = Mockito.mock(OkHttpClient.class);
+        Mockito.when(configuration.getOkHttpClient()).thenReturn(okHttpClient);
+        Mockito.when(configuration.getBaseUrl()).thenReturn(URI.create("http://localhost:8123/api").toURL());
+        Mockito.when(configuration.getObjectMapper()).thenReturn(objectMapper);
+
+        var call = Mockito.mock(Call.class);
+        Mockito.when(okHttpClient.newCall(Mockito.any())).thenReturn(call);
+        var response = Mockito.mock(Response.class);
+        Mockito.when(response.code()).thenReturn(200);
+        Mockito.when(response.isSuccessful()).thenReturn(true);
+        var responseBody = Mockito.mock(ResponseBody.class);
+        Mockito.when(responseBody.string()).thenReturn("""
+                {
+                  "service_response": {
+                    "todo.tasks": {
+                      "items": [
+                        {"summary": "Done", "uid": "1", "status": "completed"},
+                        {"summary": "Pending", "uid": "2", "status": "needs_action"},
+                        {"summary": "Unknown", "uid": "3", "status": "other"}
+                      ]
+                    }
+                  }
+                }
+                """);
+        Mockito.when(response.body()).thenReturn(responseBody);
+        Mockito.when(call.execute()).thenReturn(response);
+
+        var todoService = new TodoServiceImpl(configuration);
+
+        Assertions.assertEquals(List.of("Done"), todoService.getCompletedTodoItems("todo.tasks").stream()
+                .map(TodoItem::summary).toList());
+        Assertions.assertEquals(List.of("Pending"), todoService.getUncompletedTodoItems("todo.tasks").stream()
+                .map(TodoItem::summary).toList());
+        Mockito.verify(okHttpClient, Mockito.times(2)).newCall(Mockito.any());
+    }
+
+    @Test
     void shouldFilterTodoItemsByStartAndEndDates() throws IOException {
         Configuration configuration = Mockito.mock(Configuration.class);
         OkHttpClient okHttpClient = Mockito.mock(OkHttpClient.class);
@@ -205,6 +245,84 @@ class TodoServiceImplTest {
 
         Assertions.assertNotNull(items);
         Assertions.assertTrue(items.isEmpty());
+    }
+
+    @Test
+    void shouldAddRemoveAndUpdateTodoItems() throws IOException {
+        var configuration = Mockito.mock(Configuration.class);
+        var okHttpClient = Mockito.mock(OkHttpClient.class);
+        Mockito.when(configuration.getOkHttpClient()).thenReturn(okHttpClient);
+        Mockito.when(configuration.getBaseUrl()).thenReturn(URI.create("http://localhost:8123/api").toURL());
+        Mockito.when(configuration.getObjectMapper()).thenReturn(objectMapper);
+
+        var call = Mockito.mock(Call.class);
+        Mockito.when(okHttpClient.newCall(Mockito.any())).thenReturn(call);
+        Response response = Mockito.mock(Response.class);
+        Mockito.when(response.code()).thenReturn(200);
+        Mockito.when(response.isSuccessful()).thenReturn(true);
+        ResponseBody responseBody = Mockito.mock(ResponseBody.class);
+        Mockito.when(responseBody.string()).thenReturn("{}");
+        Mockito.when(response.body()).thenReturn(responseBody);
+        Mockito.when(call.execute()).thenReturn(response);
+
+        var todoService = new TodoServiceImpl(configuration);
+        Assertions.assertTrue(todoService.addTodoItem("todo.shopping_list", "Buy \"oat\" milk"));
+        Assertions.assertTrue(todoService.removeTodoItem("todo.shopping_list", "Buy \"oat\" milk"));
+        Assertions.assertTrue(todoService.setTodoItemCompleted("todo.shopping_list", "Buy \"oat\" milk", true));
+        Assertions.assertTrue(todoService.setTodoItemCompleted("todo.shopping_list", "Buy \"oat\" milk", false));
+
+        var requestCaptor = org.mockito.ArgumentCaptor.forClass(Request.class);
+        Mockito.verify(okHttpClient, Mockito.times(4)).newCall(requestCaptor.capture());
+        var requests = requestCaptor.getAllValues();
+        Assertions.assertTrue(requests.get(0).url().toString().endsWith("services/todo/add_item"));
+        Assertions.assertTrue(requests.get(1).url().toString().endsWith("services/todo/remove_item"));
+        Assertions.assertTrue(requests.get(2).url().toString().endsWith("services/todo/update_item"));
+        Assertions.assertTrue(requests.get(3).url().toString().endsWith("services/todo/update_item"));
+
+        var addPayload = objectMapper.readTree(requestBody(requests.get(0)));
+        Assertions.assertEquals("todo.shopping_list", addPayload.path("entity_id").asText());
+        Assertions.assertEquals("Buy \"oat\" milk", addPayload.path("item").asText());
+
+        var removePayload = objectMapper.readTree(requestBody(requests.get(1)));
+        Assertions.assertEquals("todo.shopping_list", removePayload.path("entity_id").asText());
+        Assertions.assertEquals("Buy \"oat\" milk", removePayload.path("item").asText());
+
+        var completePayload = objectMapper.readTree(requestBody(requests.get(2)));
+        Assertions.assertEquals("todo.shopping_list", completePayload.path("entity_id").asText());
+        Assertions.assertEquals("Buy \"oat\" milk", completePayload.path("item").asText());
+        Assertions.assertEquals("completed", completePayload.path("status").asText());
+
+        var uncompletePayload = objectMapper.readTree(requestBody(requests.get(3)));
+        Assertions.assertEquals("needs_action", uncompletePayload.path("status").asText());
+    }
+
+    @Test
+    void shouldReturnFalseWhenUpdatingTodoItemFails() throws IOException {
+        var configuration = Mockito.mock(Configuration.class);
+        var okHttpClient = Mockito.mock(OkHttpClient.class);
+        Mockito.when(configuration.getOkHttpClient()).thenReturn(okHttpClient);
+        Mockito.when(configuration.getBaseUrl()).thenReturn(URI.create("http://localhost:8123/api").toURL());
+        Mockito.when(configuration.getObjectMapper()).thenReturn(objectMapper);
+
+        var call = Mockito.mock(Call.class);
+        Mockito.when(okHttpClient.newCall(Mockito.any())).thenReturn(call);
+        var response = Mockito.mock(Response.class);
+        Mockito.when(response.code()).thenReturn(400);
+        Mockito.when(response.isSuccessful()).thenReturn(false);
+        var responseBody = Mockito.mock(ResponseBody.class);
+        Mockito.when(responseBody.string()).thenReturn("400: Bad Request");
+        Mockito.when(response.body()).thenReturn(responseBody);
+        Mockito.when(call.execute()).thenReturn(response);
+
+        var todoService = new TodoServiceImpl(configuration);
+
+        Assertions.assertFalse(todoService.setTodoItemCompleted("todo.tasks", "Missing item", true));
+    }
+
+    private String requestBody(Request request) throws IOException {
+        var buffer = new Buffer();
+        request.body().writeTo(buffer);
+        return buffer.readUtf8();
     }
 
     @Test
