@@ -1,7 +1,9 @@
 package com.github.thibstars.jhaapi.client.todo;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.thibstars.jhaapi.Configuration;
 import com.github.thibstars.jhaapi.client.states.StatesService;
 import com.github.thibstars.jhaapi.client.states.StatesServiceImpl;
@@ -87,5 +89,55 @@ public class TodoServiceImpl extends BaseService<Todo> implements TodoService {
         }
 
         return todos;
+    }
+
+    @Override
+    public List<TodoItem> getTodoItems(String entityId) {
+        return getTodoItems(entityId, null, null);
+    }
+
+    @Override
+    public List<TodoItem> getCompletedTodoItems(String entityId) {
+        return getTodoItems(entityId).stream().filter(todoItem -> "completed".equals(todoItem.status())).toList();
+    }
+
+    @Override
+    public List<TodoItem> getUncompletedTodoItems(String entityId) {
+        return getTodoItems(entityId).stream().filter(todoItem -> "needs_action".equals(todoItem.status())).toList();
+    }
+
+    @Override
+    public boolean addTodoItem(String entityId, String summary) {
+        LOGGER.info("Adding todo item {} to {}", summary, entityId);
+
+        var data = getConfiguration().getObjectMapper().createObjectNode().put("entity_id", entityId).put("item",
+                summary);
+        return post("todo/add_item", serializeServiceData(data)).isPresent();
+    }
+
+    @Override
+    public boolean removeTodoItem(String entityId, String summary) {
+        LOGGER.info("Removing todo item {} from {}", summary, entityId);
+
+        var data = getConfiguration().getObjectMapper().createObjectNode().put("entity_id", entityId).put("item",
+                summary);
+        return post("todo/remove_item", serializeServiceData(data)).isPresent();
+    }
+
+    @Override
+    public boolean setTodoItemCompleted(String entityId, String summary, boolean completed) {
+        LOGGER.info("Setting todo item {} completion to {} for {}", summary, completed, entityId);
+
+        var data = getConfiguration().getObjectMapper().createObjectNode().put("entity_id", entityId)
+                .put("item", summary).put("status", completed ? "completed" : "needs_action");
+        return post("todo/update_item", serializeServiceData(data)).isPresent();
+    }
+
+    private String serializeServiceData(ObjectNode data) {
+        try {
+            return getConfiguration().getObjectMapper().writeValueAsString(data);
+        } catch (JsonProcessingException e) {
+            throw new ClientException("Unable to serialize todo service data.", e);
+        }
     }
 }
